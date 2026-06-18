@@ -1,0 +1,177 @@
+/* =========================================
+   MANGOHADA APP — app.css
+   ========================================= */
+
+/* 전체 폰트 */
+*, *::before, *::after {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 스크롤바 숨김 */
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 앱 컨테이너: 모바일 앱 느낌, 데스크톱에서 센터 정렬 */
+.app-wrap {
+  max-width: 520px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: white;
+  box-shadow: 0 0 60px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* ─── FORM UTILITIES ─── */
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9CA3AF;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 2px solid #F3F4F6;
+  background: #F9FAFB;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1A1A1A;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.form-input::placeholder { color: #D1D5DB; }
+.form-input:focus {
+  border-color: #F5A623;
+  background: white;
+}
+
+/* ─── 업로드 존 ─── */
+.upload-zone {
+  width: 100%;
+  height: 180px;
+  border: 2px dashed #E5E7EB;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #F9FAFB;
+  transition: border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+.upload-zone:hover {
+  border-color: #F5A623;
+  background: #FFFBF0;
+}
+
+/* ─── 바텀 내비 ─── */
+.bottom-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 12px;
+  transition: all 0.2s;
+  color: #D1D5DB;
+}
+.bottom-nav.active { color: #F5A623; }
+
+/* ─── 유언 필터 버튼 ─── */
+.will-filter {
+  background: #F3F4F6;
+  color: #9CA3AF;
+}
+.will-filter.active {
+  background: #1A1A1A;
+  color: white;
+}
+
+/* ─── 유언 타입 선택 버튼 ─── */
+.will-type {
+  background: white;
+  color: #9CA3AF;
+  border: 2px solid #F3F4F6;
+}
+.will-type.active {
+  background: #1A1A1A;
+  color: white;
+  border-color: #1A1A1A;
+}
+
+/* ─── 아티클 태그 버튼 ─── */
+.article-tag {
+  background: #F3F4F6;
+  color: #9CA3AF;
+}
+.article-tag.active {
+  background: #1A1A1A;
+  color: white;
+}
+
+/* ─── 전문가 퀵 버튼 ─── */
+.expert-quick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border-radius: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.expert-quick-btn:hover { background: #F9FAFB; }
+.expert-quick-btn span {
+  font-size: 10px;
+  font-weight: 700;
+  color: #6B7280;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* ─── 텍스트 클램프 ─── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── 모달 슬라이드업 애니메이션 ─── */
+.slide-up {
+  animation: slideUp 0.32s cubic-bezier(0.32, 1.24, 0.64, 1);
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(60px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── 로딩 스피너 ─── */
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── 반응형: 태블릿/데스크톱 ─── */
+@media (min-width: 640px) {
+  body { background: #F5F5F5; }
+  .app-wrap {
+    min-height: 100vh;
+    box-shadow: 0 0 80px rgba(0,0,0,0.10);
+  }
+}
