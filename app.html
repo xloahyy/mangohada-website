@@ -423,17 +423,19 @@
         </div>
       </div>
 
-      <!-- 전문가 3열 그리드 -->
-      <div id="expertGrid" class="expert-grid mb-8"></div>
+      <!-- 전문가 2열 그리드 -->
+      <div id="expertGrid" class="grid grid-cols-2 gap-4 mb-6"></div>
 
-      <!-- 상담 내역 -->
-      <div class="card">
-        <h3 class="section-title mb-5">상담 내역</h3>
-        <div class="border-2 border-dashed border-gray-100 rounded-2xl py-14 text-center">
-          <iconify-icon icon="solar:chat-round-line-linear" width="36" class="text-gray-200 mx-auto mb-3"></iconify-icon>
-          <p class="text-sm text-gray-400">아직 상담 내역이 없습니다</p>
+      <!-- 나의 상담 내역 -->
+      <button class="w-full card flex items-center justify-between hover:border-[#F5A623]/40 hover:shadow-md transition-all">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center">
+            <iconify-icon icon="solar:chat-round-line-linear" width="20" class="text-gray-400"></iconify-icon>
+          </div>
+          <span class="text-sm font-bold text-[#1A1A1A]">나의 상담 내역</span>
         </div>
-      </div>
+        <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-400"></iconify-icon>
+      </button>
     </div>
 
 

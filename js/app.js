@@ -54,45 +54,51 @@ let currentArticleTag = '';
 const EXPERTS = [
   {
     title: '변호사',
-    desc: '유언장 법적 효력 검토, 상속 분쟁 해결',
+    desc: '공증 및 집행대리, 법률자문',
     icon: 'solar:diploma-linear',
     bg: 'bg-blue-50',
     color: 'text-blue-400',
+    emoji: '⚖️',
   },
   {
-    title: '장례 준비',
-    desc: '사전 장례 상담, 절차 안내, 추모 계획',
+    title: '장례준비',
+    desc: '장례준비, 장례진행관리',
     icon: 'solar:flower-linear',
     bg: 'bg-purple-50',
     color: 'text-purple-400',
+    emoji: '🕯️',
   },
   {
     title: '재무설계',
-    desc: '자산 정리, 상속세 계획, 재무 컨설팅',
+    desc: '유산정리, 재산분할',
     icon: 'solar:chart-2-linear',
     bg: 'bg-green-50',
     color: 'text-green-500',
+    emoji: '💰',
   },
   {
     title: '보험',
-    desc: '사망보험, 생전보험 상품 상담 및 설계',
+    desc: '보험 관리',
     icon: 'solar:shield-bold-duotone',
     bg: 'bg-orange-50',
     color: 'text-orange-400',
+    emoji: '📋',
   },
   {
-    title: '타로 / 사주',
-    desc: '삶의 방향성 탐색, 생애 설계 도움',
+    title: '타로/사주 전문가',
+    desc: '타로/사주 전문가',
     icon: 'solar:star-shine-linear',
     bg: 'bg-yellow-50',
     color: 'text-yellow-500',
+    emoji: '🔮',
   },
   {
     title: '심리상담',
-    desc: '죽음 불안 완화, 웰다잉 심리 지원',
+    desc: '마음을 위로해 줄 수 있는 상담사를 연결해 드려요',
     icon: 'solar:heart-shine-linear',
     bg: 'bg-pink-50',
     color: 'text-pink-400',
+    emoji: '❤️',
   },
 ];
 
@@ -474,7 +480,6 @@ async function loadWills() {
   }
 
   allWills = data || [];
-  document.getElementById('willCount').textContent = allWills.length;
   renderWills();
 }
 
@@ -743,17 +748,16 @@ async function saveWill() {
 ======================== */
 function renderExperts() {
   document.getElementById('expertGrid').innerHTML = EXPERTS.map(e => `
-    <button class="text-left bg-white border-1.5 border-gray-100 rounded-2xl p-6
-                   hover:border-[#F5A623]/40 hover:shadow-lg transition-all active:scale-[0.98]"
+    <button class="text-left bg-white rounded-2xl p-6 hover:shadow-lg transition-all active:scale-[0.98]"
       style="border: 1.5px solid #F3F4F6;">
-      <div class="w-14 h-14 ${e.bg} rounded-2xl flex items-center justify-center mb-4">
-        <iconify-icon icon="${e.icon}" width="28" class="${e.color}"></iconify-icon>
-      </div>
-      <h4 class="text-base font-black text-[#1A1A1A] mb-2">${e.title}</h4>
-      <p class="text-sm text-gray-400 leading-relaxed mb-4">${e.desc}</p>
-      <div class="flex items-center gap-1.5 text-[#F5A623]">
-        <span class="text-xs font-bold">상담 신청</span>
-        <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
+      <h4 class="text-base font-black text-[#1A1A1A] mb-1">${e.title}</h4>
+      <p class="text-sm text-gray-400 leading-relaxed mb-5">${e.desc}</p>
+      <div class="flex items-end justify-between">
+        <div class="flex items-center gap-1.5 text-[#F5A623]">
+          <span class="text-xs font-bold">상담 신청</span>
+          <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
+        </div>
+        <span class="text-4xl">${e.emoji}</span>
       </div>
     </button>
   `).join('');
