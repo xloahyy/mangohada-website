@@ -426,6 +426,67 @@ async function deleteHappiness(id) {
   await loadHappiness();
 }
 
+/* ========================
+   상담 신청
+======================== */
+let currentExpertType = '';
+
+function openConsultModal(expertTitle) {
+  currentExpertType = expertTitle;
+  document.getElementById('consultExpertTitle').textContent = expertTitle;
+  document.getElementById('consultContent').value = '';
+  document.getElementById('consultCharCount').textContent = '0';
+  document.getElementById('consultError').classList.add('hidden');
+  document.getElementById('consultSuccess').classList.add('hidden');
+  document.getElementById('consultModal').classList.remove('hidden');
+}
+
+function closeConsultModal() {
+  document.getElementById('consultModal').classList.add('hidden');
+}
+
+function updateConsultCount() {
+  document.getElementById('consultCharCount').textContent =
+    document.getElementById('consultContent').value.length;
+}
+
+async function submitConsult() {
+  const content = document.getElementById('consultContent').value.trim();
+  const errEl = document.getElementById('consultError');
+  const successEl = document.getElementById('consultSuccess');
+
+  if (!content) {
+    errEl.textContent = '상담 내용을 입력해주세요';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const btn = document.getElementById('submitConsultBtn');
+  setLoading(btn, true, '신청 중...');
+
+  const { data: profile } = await sb.from('profiles').select('name').eq('id', currentUser.id).single();
+  const userName = profile?.name || currentUser.email.split('@')[0];
+
+  const { error } = await sb.from('consultations').insert([{
+    user_id: currentUser.id,
+    user_name: userName,
+    expert_type: currentExpertType,
+    content,
+  }]);
+
+  setLoading(btn, false, '1회 무료 상담 신청하기');
+
+  if (error) {
+    errEl.textContent = '신청 중 오류가 발생했습니다';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  errEl.classList.add('hidden');
+  successEl.classList.remove('hidden');
+  setTimeout(() => closeConsultModal(), 2000);
+}
+
 function openRandomModal() {
   document.getElementById('randomResult').innerHTML = '<p class="text-gray-300 text-sm">버튼을 눌러 다른 유저의 행복을 확인해보세요</p>';
   document.getElementById('randomModal').classList.remove('hidden');
@@ -748,7 +809,8 @@ async function saveWill() {
 ======================== */
 function renderExperts() {
   document.getElementById('expertGrid').innerHTML = EXPERTS.map(e => `
-    <button class="text-left bg-white rounded-2xl p-6 hover:shadow-lg transition-all active:scale-[0.98]"
+    <button onclick="openConsultModal('${e.title}')"
+      class="text-left bg-white rounded-2xl p-6 hover:shadow-lg hover:border-[#F5A623]/40 transition-all active:scale-[0.98]"
       style="border: 1.5px solid #F3F4F6;">
       <h4 class="text-base font-black text-[#1A1A1A] mb-1">${e.title}</h4>
       <p class="text-sm text-gray-400 leading-relaxed mb-5">${e.desc}</p>
