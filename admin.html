@@ -17,10 +17,11 @@
     .sidebar-nav { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:12px; font-size:14px; font-weight:700; color:#9CA3AF; background:transparent; border:none; cursor:pointer; transition:all 0.15s; text-align:left; }
     .sidebar-nav:hover { background:#F9FAFB; color:#1A1A1A; }
     .sidebar-nav.active { background:#FFFBF0; color:#F5A623; }
-    .stat-card { background:white; border-radius:20px; padding:24px; border:1.5px solid #F3F4F6; }
-    .badge-pending  { background:#FEF3C7; color:#D97706; }
+    .stat-card { background:white; border-radius:20px; padding:24px; border:1.5px solid #F3F4F6; cursor:pointer; transition:all 0.15s; }
+    .stat-card:hover { border-color: rgba(245,166,35,0.4); box-shadow: 0 4px 20px rgba(245,166,35,0.1); }
+    .badge-pending   { background:#FEF3C7; color:#D97706; }
     .badge-confirmed { background:#D1FAE5; color:#059669; }
-    .badge-done     { background:#E0E7FF; color:#4338CA; }
+    .badge-done      { background:#E0E7FF; color:#4338CA; }
   </style>
 </head>
 <body>
@@ -68,9 +69,21 @@
           <iconify-icon icon="solar:chart-2-bold" width="18"></iconify-icon>
           대시보드
         </button>
+        <button onclick="showSection('wills')" id="nav-wills" class="sidebar-nav">
+          <iconify-icon icon="solar:document-text-linear" width="18"></iconify-icon>
+          유언 작성
+        </button>
+        <button onclick="showSection('happiness')" id="nav-happiness" class="sidebar-nav">
+          <iconify-icon icon="solar:heart-shine-linear" width="18"></iconify-icon>
+          행복저금
+        </button>
         <button onclick="showSection('consultations')" id="nav-consultations" class="sidebar-nav">
           <iconify-icon icon="solar:chat-round-line-linear" width="18"></iconify-icon>
           상담 신청
+        </button>
+        <button onclick="showSection('articles')" id="nav-articles" class="sidebar-nav">
+          <iconify-icon icon="solar:book-2-linear" width="18"></iconify-icon>
+          아티클 관리
         </button>
         <button onclick="showSection('users')" id="nav-users" class="sidebar-nav">
           <iconify-icon icon="solar:users-group-rounded-linear" width="18"></iconify-icon>
@@ -93,28 +106,28 @@
       <p class="text-sm text-gray-400 mb-8">망고하다 서비스 현황</p>
 
       <div class="grid grid-cols-4 gap-4 mb-10">
-        <div class="stat-card">
+        <div class="stat-card" onclick="showSection('users')">
           <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3">
             <iconify-icon icon="solar:users-group-rounded-bold" width="20" class="text-blue-400"></iconify-icon>
           </div>
           <p class="text-3xl font-black text-[#1A1A1A]" id="statUsers">-</p>
           <p class="text-xs text-gray-400 font-medium mt-1">총 회원수</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showSection('consultations')">
           <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mb-3">
             <iconify-icon icon="solar:chat-round-line-bold" width="20" class="text-orange-400"></iconify-icon>
           </div>
           <p class="text-3xl font-black text-[#1A1A1A]" id="statConsult">-</p>
           <p class="text-xs text-gray-400 font-medium mt-1">상담 신청</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showSection('happiness')">
           <div class="w-10 h-10 bg-[#FFF8EC] rounded-xl flex items-center justify-center mb-3">
             <iconify-icon icon="solar:heart-shine-bold" width="20" class="text-[#F5A623]"></iconify-icon>
           </div>
           <p class="text-3xl font-black text-[#1A1A1A]" id="statHappiness">-</p>
           <p class="text-xs text-gray-400 font-medium mt-1">행복저금</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" onclick="showSection('wills')">
           <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3">
             <iconify-icon icon="solar:document-text-bold" width="20" class="text-purple-400"></iconify-icon>
           </div>
@@ -133,7 +146,25 @@
       </div>
     </div>
 
-    <!-- 상담 신청 관리 -->
+    <!-- 유언 작성 -->
+    <div id="sec-wills" class="hidden">
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">유언 작성</h2>
+      <p class="text-sm text-gray-400 mb-8">전체 유언 목록</p>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="willTable"></div>
+      </div>
+    </div>
+
+    <!-- 행복저금 -->
+    <div id="sec-happiness" class="hidden">
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">행복저금</h2>
+      <p class="text-sm text-gray-400 mb-8">전체 행복저금 목록</p>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="happinessTable"></div>
+      </div>
+    </div>
+
+    <!-- 상담 신청 -->
     <div id="sec-consultations" class="hidden">
       <div class="flex items-center justify-between mb-8">
         <div>
@@ -141,14 +172,23 @@
           <p class="text-sm text-gray-400">전체 상담 신청 목록</p>
         </div>
         <div class="flex gap-2">
-          <button onclick="filterConsult('all')" id="cf-all" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1A1A] text-white">전체</button>
-          <button onclick="filterConsult('pending')" id="cf-pending" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">대기</button>
+          <button onclick="filterConsult('all')"       id="cf-all"       class="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1A1A] text-white">전체</button>
+          <button onclick="filterConsult('pending')"   id="cf-pending"   class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">대기</button>
           <button onclick="filterConsult('confirmed')" id="cf-confirmed" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">확인</button>
-          <button onclick="filterConsult('done')" id="cf-done" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">완료</button>
+          <button onclick="filterConsult('done')"      id="cf-done"      class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">완료</button>
         </div>
       </div>
       <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div id="consultTable"></div>
+      </div>
+    </div>
+
+    <!-- 아티클 관리 -->
+    <div id="sec-articles" class="hidden">
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">아티클 관리</h2>
+      <p class="text-sm text-gray-400 mb-8">등록된 아티클 목록</p>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="articleTable"></div>
       </div>
     </div>
 

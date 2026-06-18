@@ -7,6 +7,8 @@ const ADMIN_EMAIL = 'admin@admin.com.com';
 let allConsultations = [];
 let currentFilter = 'all';
 
+const ALL_SECTIONS = ['dashboard', 'wills', 'happiness', 'consultations', 'articles', 'users'];
+
 /* ── 초기화 ── */
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
@@ -64,14 +66,21 @@ async function enterAdmin() {
 }
 
 async function loadAll() {
-  await Promise.all([loadStats(), loadConsultations(), loadUsers()]);
+  await Promise.all([
+    loadStats(),
+    loadConsultations(),
+    loadUsers(),
+    loadAdminWills(),
+    loadAdminHappiness(),
+  ]);
 }
 
 /* ── 섹션 전환 ── */
 function showSection(name) {
-  ['dashboard','consultations','users'].forEach(s => {
+  ALL_SECTIONS.forEach(s => {
     document.getElementById(`sec-${s}`).classList.toggle('hidden', s !== name);
-    document.getElementById(`nav-${s}`).classList.toggle('active', s === name);
+    const nav = document.getElementById(`nav-${s}`);
+    if (nav) nav.classList.toggle('active', s === name);
   });
 }
 
@@ -171,6 +180,86 @@ function statusLabel(s) {
   if (s === 'confirmed') return '확인';
   if (s === 'done')      return '완료';
   return '대기';
+}
+
+/* ── 유언 작성 ── */
+async function loadAdminWills() {
+  const { data } = await sb
+    .from('wills')
+    .select('id, content, created_at, updated_at, user_id')
+    .order('updated_at', { ascending: false });
+
+  const list = data || [];
+  const el = document.getElementById('willTable');
+
+  if (!list.length) {
+    el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">작성된 유언이 없습니다</p>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">내용 미리보기</th>
+          <th class="text-left px-6 py-3">글자 수</th>
+          <th class="text-left px-6 py-3">최종 수정일</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(w => `
+          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 text-gray-600 max-w-sm"><p class="truncate">${esc(w.content || '')}</p></td>
+            <td class="px-6 py-4 text-gray-400">${(w.content || '').length}자</td>
+            <td class="px-6 py-4 text-gray-400">${fmtDate(w.updated_at || w.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+/* ── 행복저금 ── */
+async function loadAdminHappiness() {
+  const { data } = await sb
+    .from('happiness')
+    .select('id, content, created_at')
+    .order('created_at', { ascending: false });
+
+  const list = data || [];
+  const el = document.getElementById('happinessTable');
+
+  if (!list.length) {
+    el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">작성된 행복저금이 없습니다</p>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">내용 미리보기</th>
+          <th class="text-left px-6 py-3">글자 수</th>
+          <th class="text-left px-6 py-3">작성일</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(h => `
+          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 text-gray-600 max-w-sm"><p class="truncate">${esc(h.content || '')}</p></td>
+            <td class="px-6 py-4 text-gray-400">${(h.content || '').length}자</td>
+            <td class="px-6 py-4 text-gray-400">${fmtDate(h.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+/* ── 아티클 관리 ── */
+async function loadArticles() {
+  const el = document.getElementById('articleTable');
+  el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">등록된 아티클이 없습니다</p>';
 }
 
 /* ── 회원 목록 ── */
