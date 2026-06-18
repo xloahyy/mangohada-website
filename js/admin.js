@@ -446,7 +446,12 @@ async function saveArticle() {
 
   btn.textContent = '저장하기'; btn.disabled = false;
 
-  if (error) { err.textContent = '저장에 실패했습니다'; err.classList.remove('hidden'); return; }
+  if (error) {
+    console.error('저장 오류:', error);
+    err.textContent = error.message || '저장에 실패했습니다';
+    err.classList.remove('hidden');
+    return;
+  }
 
   closeArticleModal();
   await loadArticles();
