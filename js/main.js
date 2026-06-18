@@ -1,28 +1,24 @@
 /* =========================================
    MANGOHADA — main.js
-   =========================================
-
-   문의 이메일 발송은 EmailJS를 사용합니다.
-   설정 방법:
-   1. https://www.emailjs.com 에서 무료 계정 생성
-   2. Email Service 연결 (Gmail 권장)
-   3. Email Template 생성 후 아래 상수에 키 입력
-
-   Template 변수로 사용 가능한 값:
-   {{from_name}}, {{from_email}}, {{phone}},
-   {{inquiry_type}}, {{message}}, {{submitted_at}}
    ========================================= */
 
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // <-- emailjs.com 에서 발급
-const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // <-- Email Services 탭
-const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // <-- Email Templates 탭
+/* ========================
+   SUPABASE 설정
+======================== */
+const SUPABASE_URL  = 'https://kwifydqdmyorsuqnvygh.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3aWZ5ZHFkbXlvcnN1cW52eWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3MTk1OTIsImV4cCI6MjA5NzI5NTU5Mn0.8lBEN0YSWZ5IeDY9Jf8nOJLaW4EBdeS2ZG2G6sEYOmw';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ========================
+   EMAILJS 설정 (선택)
+======================== */
+const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
 const ADMIN_EMAIL         = 'seungah0226@naver.com';
 
 const EMAILJS_READY = EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY';
-
-if (EMAILJS_READY) {
-  emailjs.init(EMAILJS_PUBLIC_KEY);
-}
+if (EMAILJS_READY) emailjs.init(EMAILJS_PUBLIC_KEY);
 
 /* ========================
    HEADER — scroll + mobile
@@ -202,28 +198,44 @@ form.addEventListener('submit', async (e) => {
   submitBtn.textContent = '전송 중...';
   submitBtn.disabled = true;
 
-  const payload = {
-    to_email:     ADMIN_EMAIL,
-    from_name:    document.getElementById('name').value.trim(),
-    from_email:   document.getElementById('email').value.trim(),
-    phone:        document.getElementById('phone').value.trim(),
-    inquiry_type: document.getElementById('type').value,
-    message:      document.getElementById('message').value.trim(),
-    submitted_at: new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+  const data = {
+    name:    document.getElementById('name').value.trim(),
+    email:   document.getElementById('email').value.trim(),
+    phone:   document.getElementById('phone').value.trim(),
+    type:    document.getElementById('type').value,
+    message: document.getElementById('message').value.trim(),
   };
 
   try {
+    // Supabase에 저장
+    const { error } = await supabase
+      .from('contact_submissions')
+      .insert([data]);
+
+    if (error) throw error;
+
+    // EmailJS 이메일 알림 (설정된 경우)
     if (EMAILJS_READY) {
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, payload);
-    } else {
-      // EmailJS 미설정 시 콘솔 확인용 (개발 단계)
-      console.log('[망고하다 문의 접수]', payload);
-      await new Promise(r => setTimeout(r, 800)); // 전송 시뮬레이션
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        to_email:     ADMIN_EMAIL,
+        from_name:    data.name,
+        from_email:   data.email,
+        phone:        data.phone,
+        inquiry_type: data.type,
+        message:      data.message,
+      });
     }
+
     openModal();
     form.reset();
+    if (checkmarkEl) {
+      checkmarkEl.style.background = 'white';
+      checkmarkEl.style.borderColor = '';
+      checkmarkEl.innerHTML = '';
+    }
+
   } catch (err) {
-    console.error('EmailJS 전송 실패:', err);
+    console.error('문의 저장 실패:', err);
     alert('문의 전송 중 오류가 발생했습니다.\n잠시 후 다시 시도해주세요.');
   } finally {
     submitBtn.textContent = '제출하기';
