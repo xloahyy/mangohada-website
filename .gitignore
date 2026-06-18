@@ -1,7 +1,8 @@
-# 스크린샷
+# 스크린샷 (로고 제외)
 *.png
 *.jpg
 *.jpeg
+!logo.png
 
 # 시스템
 .DS_Store
