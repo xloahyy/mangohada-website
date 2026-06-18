@@ -1,0 +1,8 @@
+# 스크린샷
+*.png
+*.jpg
+*.jpeg
+
+# 시스템
+.DS_Store
+Thumbs.db
