@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>망고하다 어드민</title>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: 'Pretendard', sans-serif; box-sizing: border-box; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: #F3F4F6; }
+    ::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+    html, body { height: 100%; background: #F7F7F5; }
+    .sidebar-nav { display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:12px; font-size:14px; font-weight:700; color:#9CA3AF; background:transparent; border:none; cursor:pointer; transition:all 0.15s; text-align:left; }
+    .sidebar-nav:hover { background:#F9FAFB; color:#1A1A1A; }
+    .sidebar-nav.active { background:#FFFBF0; color:#F5A623; }
+    .stat-card { background:white; border-radius:20px; padding:24px; border:1.5px solid #F3F4F6; }
+    .badge-pending  { background:#FEF3C7; color:#D97706; }
+    .badge-confirmed { background:#D1FAE5; color:#059669; }
+    .badge-done     { background:#E0E7FF; color:#4338CA; }
+  </style>
+</head>
+<body>
+
+<!-- ── 로그인 화면 ── -->
+<div id="loginScreen" class="min-h-screen flex items-center justify-center bg-[#1A1A1A]">
+  <div class="bg-white rounded-3xl p-10 w-full max-w-sm shadow-2xl">
+    <div class="text-center mb-8">
+      <img src="logo.png" alt="망고하다" class="h-14 w-auto mx-auto mb-4">
+      <p class="text-xs font-bold text-gray-400 tracking-widest uppercase">Admin Console</p>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">아이디</label>
+        <input id="adminId" type="text" placeholder="admin"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">비밀번호</label>
+        <input id="adminPw" type="password" placeholder="••••••••"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all"
+          onkeydown="if(event.key==='Enter') adminLogin()">
+      </div>
+      <p id="loginErr" class="text-xs text-red-400 hidden"></p>
+      <button onclick="adminLogin()" id="loginBtn"
+        class="w-full py-3.5 bg-[#F5A623] text-white font-bold rounded-xl hover:bg-[#E09318] transition-all">
+        로그인
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 어드민 앱 화면 ── -->
+<div id="adminApp" class="hidden flex min-h-screen">
+
+  <!-- 사이드바 -->
+  <aside class="w-56 flex-shrink-0 h-screen sticky top-0 bg-white border-r border-gray-100 flex flex-col justify-between p-4">
+    <div>
+      <div class="px-2 mb-6">
+        <img src="logo.png" alt="망고하다" class="h-10 w-auto">
+        <p class="text-[10px] text-gray-400 font-bold mt-1 tracking-widest uppercase">Admin Console</p>
+      </div>
+      <nav class="space-y-1">
+        <button onclick="showSection('dashboard')" id="nav-dashboard" class="sidebar-nav active">
+          <iconify-icon icon="solar:chart-2-bold" width="18"></iconify-icon>
+          대시보드
+        </button>
+        <button onclick="showSection('consultations')" id="nav-consultations" class="sidebar-nav">
+          <iconify-icon icon="solar:chat-round-line-linear" width="18"></iconify-icon>
+          상담 신청
+        </button>
+        <button onclick="showSection('users')" id="nav-users" class="sidebar-nav">
+          <iconify-icon icon="solar:users-group-rounded-linear" width="18"></iconify-icon>
+          회원 목록
+        </button>
+      </nav>
+    </div>
+    <button onclick="adminLogout()" class="sidebar-nav text-gray-400 hover:text-red-400 hover:bg-red-50">
+      <iconify-icon icon="solar:logout-2-linear" width="18"></iconify-icon>
+      로그아웃
+    </button>
+  </aside>
+
+  <!-- 메인 -->
+  <main class="flex-1 overflow-y-auto p-10">
+
+    <!-- 대시보드 -->
+    <div id="sec-dashboard">
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">대시보드</h2>
+      <p class="text-sm text-gray-400 mb-8">망고하다 서비스 현황</p>
+
+      <div class="grid grid-cols-4 gap-4 mb-10">
+        <div class="stat-card">
+          <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-3">
+            <iconify-icon icon="solar:users-group-rounded-bold" width="20" class="text-blue-400"></iconify-icon>
+          </div>
+          <p class="text-3xl font-black text-[#1A1A1A]" id="statUsers">-</p>
+          <p class="text-xs text-gray-400 font-medium mt-1">총 회원수</p>
+        </div>
+        <div class="stat-card">
+          <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mb-3">
+            <iconify-icon icon="solar:chat-round-line-bold" width="20" class="text-orange-400"></iconify-icon>
+          </div>
+          <p class="text-3xl font-black text-[#1A1A1A]" id="statConsult">-</p>
+          <p class="text-xs text-gray-400 font-medium mt-1">상담 신청</p>
+        </div>
+        <div class="stat-card">
+          <div class="w-10 h-10 bg-[#FFF8EC] rounded-xl flex items-center justify-center mb-3">
+            <iconify-icon icon="solar:heart-shine-bold" width="20" class="text-[#F5A623]"></iconify-icon>
+          </div>
+          <p class="text-3xl font-black text-[#1A1A1A]" id="statHappiness">-</p>
+          <p class="text-xs text-gray-400 font-medium mt-1">행복저금</p>
+        </div>
+        <div class="stat-card">
+          <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center mb-3">
+            <iconify-icon icon="solar:document-text-bold" width="20" class="text-purple-400"></iconify-icon>
+          </div>
+          <p class="text-3xl font-black text-[#1A1A1A]" id="statWills">-</p>
+          <p class="text-xs text-gray-400 font-medium mt-1">유언 작성</p>
+        </div>
+      </div>
+
+      <!-- 최근 상담 신청 -->
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 class="font-black text-[#1A1A1A]">최근 상담 신청</h3>
+          <button onclick="showSection('consultations')" class="text-xs text-[#F5A623] font-bold hover:underline">전체보기 →</button>
+        </div>
+        <div id="recentConsult"></div>
+      </div>
+    </div>
+
+    <!-- 상담 신청 관리 -->
+    <div id="sec-consultations" class="hidden">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">상담 신청</h2>
+          <p class="text-sm text-gray-400">전체 상담 신청 목록</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="filterConsult('all')" id="cf-all" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1A1A] text-white">전체</button>
+          <button onclick="filterConsult('pending')" id="cf-pending" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">대기</button>
+          <button onclick="filterConsult('confirmed')" id="cf-confirmed" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">확인</button>
+          <button onclick="filterConsult('done')" id="cf-done" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">완료</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="consultTable"></div>
+      </div>
+    </div>
+
+    <!-- 회원 목록 -->
+    <div id="sec-users" class="hidden">
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">회원 목록</h2>
+      <p class="text-sm text-gray-400 mb-8">전체 가입 회원</p>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="userTable"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
