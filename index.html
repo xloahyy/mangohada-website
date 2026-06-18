@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="망고하다 - 누구나 쉽게, 내 손으로 직접 디자인하는 나만의 엔딩. 웰다잉 전문 기업.">
+  <title>망고하다 | 나만의 엔딩을 디자인하다</title>
+
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <style>
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif; }
+    .font-handwrite { font-family: 'Nanum Pen Script', cursive; }
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+    .form__err { font-size: 12px; color: #EF4444; margin-top: 4px; min-height: 16px; display: block; }
+    .is-err { border-color: #EF4444 !important; }
+    .privacy-box { display: none; }
+    .privacy-box.is-open { display: block; }
+    .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-up.is-visible { opacity: 1; transform: translateY(0); }
+    .modal { display: none; }
+    .modal.is-open { display: flex; }
+  </style>
+</head>
+<body class="bg-white text-[#1A1A1A] antialiased">
+
+  <!-- ===== HEADER ===== -->
+  <header class="w-full bg-white relative z-50" id="header">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
+
+      <!-- Logo -->
+      <a href="#home" class="flex items-center gap-3">
+        <div class="flex flex-col">
+          <span class="text-2xl font-black tracking-tight text-[#1A1A1A] leading-none">망고하다</span>
+          <span class="text-[10px] font-semibold tracking-[0.2em] text-[#1A1A1A]/50 uppercase mt-0.5">Well-Dying Studio</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-8" id="nav">
+        <a href="#intro"    class="nav__link text-sm font-semibold tracking-wide text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors uppercase">회사소개</a>
+        <a href="#services" class="nav__link text-sm font-semibold tracking-wide text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors uppercase">서비스</a>
+        <a href="#news"     class="nav__link text-sm font-semibold tracking-wide text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors uppercase">소식</a>
+        <a href="#contact"  class="nav__link text-sm font-semibold tracking-wide text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors uppercase">문의</a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-4">
+        <div class="hidden lg:flex items-center gap-2 rounded-full border border-[#1A1A1A]/20 px-5 py-2.5">
+          <div class="bg-[#F5A623] p-1.5 rounded-full text-white flex items-center justify-center">
+            <iconify-icon icon="solar:phone-calling-linear" width="14" height="14"></iconify-icon>
+          </div>
+          <span class="text-sm font-semibold text-[#1A1A1A]">seungah0226@naver.com</span>
+        </div>
+        <a href="#contact" class="hidden md:block bg-[#F5A623] hover:bg-[#E09318] transition-colors text-sm font-bold text-white rounded-full px-6 py-2.5">
+          문의하기
+        </a>
+        <button class="text-[#1A1A1A]/60 hover:text-[#1A1A1A] transition-colors flex items-center justify-center md:hidden" id="hamburger" aria-label="메뉴 열기">
+          <iconify-icon icon="solar:hamburger-menu-linear" width="28" height="28"></iconify-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="hidden md:hidden border-t border-[#1A1A1A]/10 bg-white px-6 py-4" id="mobileMenu">
+      <div class="flex flex-col gap-4">
+        <a href="#intro"    class="text-base font-semibold text-[#1A1A1A]/70 hover:text-[#1A1A1A] py-2 border-b border-[#1A1A1A]/10">회사소개</a>
+        <a href="#services" class="text-base font-semibold text-[#1A1A1A]/70 hover:text-[#1A1A1A] py-2 border-b border-[#1A1A1A]/10">서비스 소개</a>
+        <a href="#news"     class="text-base font-semibold text-[#1A1A1A]/70 hover:text-[#1A1A1A] py-2 border-b border-[#1A1A1A]/10">소식</a>
+        <a href="#contact"  class="text-base font-semibold text-[#1A1A1A]/70 hover:text-[#1A1A1A] py-2">문의하기</a>
+        <a href="#contact" class="mt-2 bg-[#F5A623] text-white font-bold text-center py-3 rounded-full">문의하기</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== HERO ===== -->
+    <section class="relative bg-white pt-8 pb-8" id="home">
+      <div class="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-12 lg:gap-0">
+
+        <!-- Left: Visual -->
+        <div class="w-full lg:w-1/2 relative flex justify-center lg:justify-start pt-10 lg:pt-0">
+          <div class="relative w-full max-w-lg">
+            <!-- Main visual card -->
+            <div class="relative z-10 rounded-3xl overflow-hidden border-8 border-[#1A1A1A] bg-[#1A1A1A] aspect-[4/3] rotate-[-2deg] shadow-2xl">
+              <div class="absolute inset-0 bg-gradient-to-br from-[#FFFBF0] via-[#FFF3D0] to-[#F5A623]/40 flex flex-col items-center justify-center p-8">
+                <span class="font-handwrite text-[#F5A623] text-5xl mb-4">망고노트</span>
+                <div class="w-48 h-1 bg-[#1A1A1A]/10 rounded mb-3"></div>
+                <div class="w-40 h-1 bg-[#1A1A1A]/10 rounded mb-3"></div>
+                <div class="w-44 h-1 bg-[#1A1A1A]/10 rounded mb-3"></div>
+                <div class="w-36 h-1 bg-[#1A1A1A]/10 rounded mb-6"></div>
+                <div class="border-2 border-[#1A1A1A]/20 rounded-xl px-6 py-3 text-[#1A1A1A]/60 text-sm font-semibold tracking-wider">법적 효력 있는 유언노트</div>
+              </div>
+            </div>
+            <!-- Floating badge -->
+            <div class="absolute -bottom-4 -right-4 z-20 drop-shadow-xl">
+              <div class="bg-[#F5A623] rounded-2xl px-5 py-3 border-2 border-[#1A1A1A] shadow-[3px_3px_0_#1A1A1A]">
+                <span class="text-white font-black text-sm">스마트스토어 판매 중 →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Text -->
+        <div class="w-full lg:w-1/2 mt-12 lg:mt-0 lg:pl-16 relative">
+          <div class="relative inline-block mb-6">
+            <span class="font-handwrite text-5xl lg:text-6xl tracking-tight text-[#F5A623] block -mb-3 relative z-10 ml-1">나만의</span>
+            <h1 class="text-6xl lg:text-8xl font-black tracking-tight text-[#1A1A1A] uppercase leading-none">엔딩을<br>디자인하다</h1>
+
+            <!-- Badge -->
+            <div class="absolute -top-10 -right-4 lg:-right-20 flex h-28 w-28 items-center justify-center rounded-full bg-[#F5A623] text-white shadow-xl z-20 border-4 border-[#1A1A1A] before:absolute before:inset-2 before:rounded-full before:border-2 before:border-dashed before:border-white/40">
+              <div class="flex flex-col items-center justify-center relative z-10 text-center">
+                <span class="text-[9px] font-bold uppercase tracking-widest mb-1 text-white/80">웰다잉</span>
+                <span class="leading-none text-xl font-black">전문</span>
+                <span class="leading-none text-xl font-black">기업</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust indicators -->
+          <div class="flex items-center gap-3 mb-8">
+            <div class="flex gap-1 text-[#F5A623]">
+              <iconify-icon icon="solar:star-bold" width="22" height="22"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="22" height="22"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="22" height="22"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="22" height="22"></iconify-icon>
+              <iconify-icon icon="solar:star-bold" width="22" height="22"></iconify-icon>
+            </div>
+            <span class="text-lg font-bold text-[#1A1A1A]">법적 효력 보장</span>
+            <span class="text-sm text-[#1A1A1A]/50 font-medium">공증 가능한 유언노트</span>
+          </div>
+
+          <!-- Description card -->
+          <div class="bg-white rounded-3xl p-7 shadow-[0_8px_30px_rgba(0,0,0,0.08)] max-w-lg mb-10 border border-[#1A1A1A]/5">
+            <p class="text-base leading-relaxed text-[#1A1A1A]/70">
+              '웰다잉(Well-Dying)'이라는 무겁게 느껴질 수 있는 주제를, 망고하다는 따뜻하고 직관적으로 풀어냅니다.
+              유언 작성부터 엔딩 플래닝까지 — 삶의 아름다운 마무리를 함께 설계합니다.
+            </p>
+          </div>
+
+          <!-- CTAs -->
+          <div class="flex flex-wrap items-center gap-4">
+            <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer"
+               class="rounded-full bg-[#F5A623] px-8 py-3.5 text-base font-bold text-white shadow-md hover:bg-[#E09318] transition-all hover:scale-105">
+              망고노트 구매하기
+            </a>
+            <a href="#contact"
+               class="rounded-full border-2 border-[#1A1A1A] px-8 py-3 text-base font-bold text-[#1A1A1A] hover:bg-[#1A1A1A] hover:text-white transition-all">
+              서비스 문의하기
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wave Divider -->
+    <div class="w-full overflow-hidden leading-none z-10 relative -mt-1">
+      <svg viewBox="0 0 1440 180" class="w-full h-auto fill-[#FFFBF0] bg-white block">
+        <path d="M0,128L80,133.3C160,139,320,149,480,138.7C640,128,800,96,960,96C1120,96,1280,128,1360,144L1440,160L1440,180L1360,180C1280,180,1120,180,960,180C800,180,640,180,480,180C320,180,160,180,80,180L0,180Z"></path>
+      </svg>
+    </div>
+
+    <!-- ===== SERVICES ===== -->
+    <section class="bg-[#FFFBF0] pt-8 pb-32 px-6 lg:px-8 relative z-0" id="services">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-4">
+          <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-1">서비스 소개</span>
+          <h2 class="text-3xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] uppercase">3대 핵심 서비스</h2>
+        </div>
+
+        <div class="flex flex-col lg:flex-row justify-center items-center gap-12 lg:gap-8 pt-28">
+
+          <!-- Arrow Left -->
+          <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1A1A1A]/40 shadow-md">
+            <iconify-icon icon="solar:alt-arrow-left-linear" width="20" height="20"></iconify-icon>
+          </div>
+
+          <!-- Card 1: 망고노트 -->
+          <div class="relative w-full max-w-[300px] mt-24 lg:mt-0 fade-up">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-60 h-44 z-10">
+              <div class="h-full w-full rounded-3xl overflow-hidden border-8 border-white shadow-xl bg-white transform rotate-[-3deg]">
+                <div class="w-full h-full bg-gradient-to-br from-[#FFFBF0] to-[#F5A623]/30 flex flex-col items-center justify-center gap-2 p-4">
+                  <iconify-icon icon="solar:document-text-linear" width="40" height="40" class="text-[#F5A623]"></iconify-icon>
+                  <span class="text-sm font-bold text-[#1A1A1A]/60 tracking-wider uppercase">망고노트</span>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -top-10 -right-4 z-20 flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white shadow-lg border border-[#1A1A1A]/10">
+              <span class="text-[9px] font-bold text-[#1A1A1A]/40 uppercase tracking-wider mb-0.5">유언장</span>
+              <span class="leading-none text-lg font-black text-[#1A1A1A]">법적</span>
+              <span class="leading-none text-lg font-black text-[#F5A623]">효력</span>
+            </div>
+            <div class="bg-[#1A1A1A] rounded-[2.5rem] pt-32 pb-8 px-7 text-white flex flex-col shadow-lg">
+              <span class="font-handwrite text-4xl mb-1 text-[#F5A623]">망고노트</span>
+              <h3 class="text-3xl font-black tracking-tight mb-4 uppercase">유언노트</h3>
+              <div class="flex items-center gap-2 mb-5 bg-white/10 w-fit px-3 py-1.5 rounded-full">
+                <iconify-icon icon="solar:verified-check-linear" width="16" height="16" class="text-[#F5A623]"></iconify-icon>
+                <span class="text-sm font-semibold">공증 · 법적 효력 보장</span>
+              </div>
+              <p class="text-sm leading-relaxed text-white/75 mb-8">
+                복잡한 법률 절차 없이, 나만의 언어로 작성하는 유언장. 법적 효력을 갖춘 망고노트로 소중한 사람들에게 마지막 메시지를 전하세요.
+              </p>
+              <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer"
+                 class="rounded-full bg-[#F5A623] px-6 py-3 text-sm font-bold text-white w-fit hover:bg-[#E09318] transition-colors">
+                스마트스토어에서 구매하기 →
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 2: 엔딩 플래너 -->
+          <div class="relative w-full max-w-[300px] mt-24 lg:mt-0 fade-up">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-60 h-44 z-10">
+              <div class="h-full w-full rounded-3xl overflow-hidden border-8 border-white shadow-xl bg-white transform rotate-[2deg]">
+                <div class="w-full h-full bg-gradient-to-br from-[#E8F5E9] to-[#A5D6A7]/60 flex flex-col items-center justify-center gap-2 p-4">
+                  <iconify-icon icon="solar:calendar-date-linear" width="40" height="40" class="text-[#2E7D32]"></iconify-icon>
+                  <span class="text-sm font-bold text-[#2E7D32]/70 tracking-wider uppercase">엔딩 플래너</span>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -top-10 -right-4 z-20 flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white shadow-lg border border-[#1A1A1A]/10">
+              <span class="text-[9px] font-bold text-[#1A1A1A]/40 uppercase tracking-wider mb-0.5">매칭</span>
+              <span class="leading-none text-2xl font-black text-[#F5A623]">1:1</span>
+              <span class="text-[9px] font-bold text-[#1A1A1A]/40 mt-0.5">전문가</span>
+            </div>
+            <div class="bg-[#F5A623] rounded-[2.5rem] pt-32 pb-8 px-7 text-[#1A1A1A] flex flex-col shadow-lg">
+              <span class="font-handwrite text-4xl mb-1 text-[#1A1A1A]">엔딩</span>
+              <h3 class="text-3xl font-black tracking-tight mb-4 uppercase">플래너</h3>
+              <div class="flex items-center gap-2 mb-5 bg-[#1A1A1A]/10 w-fit px-3 py-1.5 rounded-full">
+                <iconify-icon icon="solar:users-group-rounded-linear" width="16" height="16"></iconify-icon>
+                <span class="text-sm font-semibold">1:1 전문가 매칭 서비스</span>
+              </div>
+              <p class="text-sm leading-relaxed text-[#1A1A1A]/75 mb-8">
+                전문 엔딩 플래너와 1:1 매칭을 통해 나만의 마지막을 설계합니다. 장례 계획부터 유산 정리까지 모든 과정을 함께합니다.
+              </p>
+              <a href="#contact"
+                 class="rounded-full bg-[#1A1A1A] px-6 py-3 text-sm font-bold text-[#F5A623] w-fit hover:bg-[#333] transition-colors">
+                상담 신청하기 →
+              </a>
+            </div>
+          </div>
+
+          <!-- Card 3: 망고 서비스 -->
+          <div class="relative w-full max-w-[300px] mt-24 lg:mt-0 fade-up">
+            <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-60 h-44 z-10">
+              <div class="h-full w-full rounded-3xl overflow-hidden border-8 border-white shadow-xl bg-white transform rotate-[-1deg]">
+                <div class="w-full h-full bg-gradient-to-br from-[#EDE7F6] to-[#CE93D8]/40 flex flex-col items-center justify-center gap-2 p-4">
+                  <iconify-icon icon="solar:cpu-bolt-linear" width="40" height="40" class="text-[#6A1B9A]"></iconify-icon>
+                  <span class="text-sm font-bold text-[#6A1B9A]/70 tracking-wider uppercase">망고 서비스</span>
+                </div>
+              </div>
+            </div>
+            <div class="absolute -top-10 -right-4 z-20 flex h-24 w-24 flex-col items-center justify-center rounded-full bg-white shadow-lg border border-[#1A1A1A]/10">
+              <span class="text-[9px] font-bold text-[#1A1A1A]/40 uppercase tracking-wider mb-0.5">기술</span>
+              <span class="leading-none text-2xl font-black text-[#F5A623]">AI</span>
+              <span class="text-[9px] font-bold text-[#1A1A1A]/40 mt-0.5">통합플랫폼</span>
+            </div>
+            <div class="bg-[#1A1A1A] rounded-[2.5rem] pt-32 pb-8 px-7 text-white flex flex-col shadow-lg">
+              <span class="font-handwrite text-4xl mb-1 text-[#F5A623]">망고</span>
+              <h3 class="text-3xl font-black tracking-tight mb-4 uppercase">서비스</h3>
+              <div class="flex items-center gap-2 mb-5 bg-white/10 w-fit px-3 py-1.5 rounded-full">
+                <iconify-icon icon="solar:smartphone-linear" width="16" height="16" class="text-[#F5A623]"></iconify-icon>
+                <span class="text-sm font-semibold">AI · 전문 인력 통합 플랫폼</span>
+              </div>
+              <p class="text-sm leading-relaxed text-white/75 mb-8">
+                망고하다 플랫폼을 통해 엔딩 플래닝의 모든 과정을 통합 관리합니다. AI 기술과 전문 인력이 결합된 맞춤형 웰다잉 솔루션을 경험하세요.
+              </p>
+              <a href="#contact"
+                 class="rounded-full bg-[#F5A623] px-6 py-3 text-sm font-bold text-white w-fit hover:bg-[#E09318] transition-colors">
+                서비스 문의하기 →
+              </a>
+            </div>
+          </div>
+
+          <!-- Arrow Right -->
+          <div class="hidden lg:flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#1A1A1A]/40 shadow-md">
+            <iconify-icon icon="solar:alt-arrow-right-linear" width="20" height="20"></iconify-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== INTRODUCTION / BRAND STORY ===== -->
+    <section class="bg-white pt-24 pb-16 px-6 lg:px-8 relative z-10 -mt-8 rounded-t-[3rem] border-t border-[#1A1A1A]/5 shadow-[0_-10px_40px_rgba(0,0,0,0.02)]" id="intro">
+      <div class="mx-auto max-w-7xl flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+
+        <!-- Image Side -->
+        <div class="w-full lg:w-1/2 relative">
+          <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl border-8 border-white transform -rotate-2 bg-[#1A1A1A]">
+            <div class="aspect-[4/3] bg-gradient-to-br from-[#FFFBF0] via-[#FFF3D0] to-[#F5A623]/20 flex flex-col items-center justify-center p-12 text-center">
+              <span class="font-handwrite text-6xl text-[#F5A623] mb-4">망고하다</span>
+              <p class="text-[#1A1A1A]/50 text-base font-medium leading-relaxed">
+                삶의 마지막 순간을<br>따뜻하게 계획하는 것
+              </p>
+            </div>
+          </div>
+          <div class="absolute -bottom-8 -right-8 h-48 w-48 bg-[#F5A623]/15 rounded-full blur-2xl -z-10"></div>
+          <div class="absolute -top-8 -left-8 h-48 w-48 bg-[#1A1A1A]/5 rounded-full blur-2xl -z-10"></div>
+        </div>
+
+        <!-- Content Side -->
+        <div class="w-full lg:w-1/2">
+          <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-2">브랜드 이야기</span>
+          <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] uppercase mb-8">망고하다란?</h2>
+          <p class="text-base leading-relaxed text-[#1A1A1A]/70 mb-6">
+            '웰다잉(Well-Dying)'이라는 다소 무겁고 어렵게 느껴질 수 있는 주제를, 망고하다는 따뜻하고 직관적으로 풀어냅니다.
+            복잡한 절차나 법적 효력에 대한 의구심을 해소하고, 누구나 쉽게 자신의 마지막을 설계할 수 있도록 돕습니다.
+          </p>
+          <p class="text-base leading-relaxed text-[#1A1A1A]/70 mb-10">
+            유언 작성부터 엔딩 플래닝, 전문가 매칭까지 — 삶의 아름다운 마무리를 위한 모든 여정을 망고하다가 함께 설계합니다.
+          </p>
+
+          <!-- Stats -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-[#FFFBF0] rounded-2xl p-5 text-center border border-[#F5A623]/20">
+              <div class="text-3xl font-black text-[#F5A623] mb-1">3</div>
+              <div class="text-xs font-bold text-[#1A1A1A]/50 uppercase tracking-wider">핵심 서비스</div>
+            </div>
+            <div class="bg-[#FFFBF0] rounded-2xl p-5 text-center border border-[#F5A623]/20">
+              <div class="text-3xl font-black text-[#F5A623] mb-1">법적</div>
+              <div class="text-xs font-bold text-[#1A1A1A]/50 uppercase tracking-wider">효력 보장</div>
+            </div>
+            <div class="bg-[#FFFBF0] rounded-2xl p-5 text-center border border-[#F5A623]/20">
+              <div class="text-3xl font-black text-[#F5A623] mb-1">1:1</div>
+              <div class="text-xs font-bold text-[#1A1A1A]/50 uppercase tracking-wider">전문가 매칭</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== NEWS / SNS GALLERY ===== -->
+    <section class="bg-white pb-24 px-6 lg:px-8" id="news">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-16">
+          <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-1">소식</span>
+          <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] uppercase">채널 & 소식</h2>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 auto-rows-[200px] md:auto-rows-[260px]">
+
+          <!-- Blog: 2x2 large -->
+          <a href="https://blog.naver.com/foryoumangohada" target="_blank" rel="noopener noreferrer"
+             class="col-span-2 row-span-2 relative rounded-3xl overflow-hidden group shadow-md border border-[#1A1A1A]/5 bg-gradient-to-br from-[#FFF3CD] to-[#F5A623]/40 fade-up">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-8">
+              <iconify-icon icon="solar:document-text-bold" width="60" height="60" class="text-[#F5A623] mb-4"></iconify-icon>
+              <span class="text-2xl font-black text-[#1A1A1A] mb-2">네이버 블로그</span>
+              <p class="text-sm font-medium text-[#1A1A1A]/60 mb-4">웰다잉 이야기와 망고하다의 소식</p>
+              <span class="bg-[#1A1A1A] text-white text-xs font-bold px-4 py-2 rounded-full">블로그 바로가기 →</span>
+            </div>
+            <div class="group-hover:opacity-100 transition-opacity duration-500 bg-[#1A1A1A]/10 opacity-0 absolute inset-0"></div>
+          </a>
+
+          <!-- Instagram -->
+          <a href="https://www.instagram.com/mangohada_official" target="_blank" rel="noopener noreferrer"
+             class="relative rounded-3xl overflow-hidden group shadow-md border border-[#1A1A1A]/5 bg-gradient-to-br from-[#FCE4EC] to-[#F48FB1]/50 fade-up">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <iconify-icon icon="mdi:instagram" width="40" height="40" class="text-[#E91E63] mb-2"></iconify-icon>
+              <span class="text-base font-black text-[#1A1A1A]">인스타그램</span>
+              <span class="text-xs text-[#1A1A1A]/50 mt-1">@mangohada_official</span>
+            </div>
+            <div class="group-hover:opacity-100 transition-opacity duration-500 bg-[#1A1A1A]/10 opacity-0 absolute inset-0"></div>
+          </a>
+
+          <!-- Smart Store -->
+          <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer"
+             class="relative rounded-3xl overflow-hidden group shadow-md border border-[#1A1A1A]/5 bg-gradient-to-br from-[#E8F5E9] to-[#A5D6A7]/50 fade-up">
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+              <iconify-icon icon="solar:bag-4-linear" width="40" height="40" class="text-[#2E7D32] mb-2"></iconify-icon>
+              <span class="text-base font-black text-[#1A1A1A]">스마트스토어</span>
+              <span class="text-xs text-[#1A1A1A]/50 mt-1">망고노트 구매</span>
+            </div>
+            <div class="group-hover:opacity-100 transition-opacity duration-500 bg-[#1A1A1A]/10 opacity-0 absolute inset-0"></div>
+          </a>
+
+          <!-- Wide: 문의 배너 -->
+          <a href="#contact"
+             class="col-span-2 relative rounded-3xl overflow-hidden group shadow-md bg-[#1A1A1A] fade-up">
+            <div class="absolute inset-0 flex items-center justify-between px-10">
+              <div>
+                <span class="font-handwrite text-3xl text-[#F5A623] block mb-1">궁금한 점이 있으신가요?</span>
+                <span class="text-white font-black text-xl uppercase">문의하기 →</span>
+              </div>
+              <iconify-icon icon="solar:chat-round-line-linear" width="60" height="60" class="text-[#F5A623]/30"></iconify-icon>
+            </div>
+            <div class="group-hover:opacity-100 transition-opacity duration-300 bg-white/5 opacity-0 absolute inset-0"></div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CONTACT FORM ===== -->
+    <section class="bg-[#FFFBF0] py-24 px-6 lg:px-8 border-t border-[#1A1A1A]/5" id="contact">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-16">
+          <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-1">연락하기</span>
+          <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] uppercase">문의하기</h2>
+          <p class="mt-4 text-base text-[#1A1A1A]/60">궁금한 점이 있으신가요? 언제든지 연락주세요.</p>
+        </div>
+
+        <form class="max-w-2xl mx-auto bg-white rounded-[2.5rem] p-10 shadow-[0_8px_40px_rgba(0,0,0,0.08)] border border-[#1A1A1A]/5" id="contactForm" novalidate>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label for="name" class="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/60 mb-2">이름 <span class="text-[#F5A623]">*</span></label>
+              <input type="text" id="name" name="name" placeholder="이름을 입력해주세요"
+                class="w-full px-5 py-3.5 rounded-2xl border-2 border-[#1A1A1A]/10 text-[#1A1A1A] placeholder-[#1A1A1A]/30 font-medium text-sm outline-none focus:border-[#F5A623] transition-colors" required>
+              <span class="form__err" id="nameErr"></span>
+            </div>
+            <div>
+              <label for="phone" class="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/60 mb-2">연락처 <span class="text-[#F5A623]">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="010-0000-0000"
+                class="w-full px-5 py-3.5 rounded-2xl border-2 border-[#1A1A1A]/10 text-[#1A1A1A] placeholder-[#1A1A1A]/30 font-medium text-sm outline-none focus:border-[#F5A623] transition-colors" required>
+              <span class="form__err" id="phoneErr"></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label for="email" class="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/60 mb-2">이메일 <span class="text-[#F5A623]">*</span></label>
+              <input type="email" id="email" name="email" placeholder="example@email.com"
+                class="w-full px-5 py-3.5 rounded-2xl border-2 border-[#1A1A1A]/10 text-[#1A1A1A] placeholder-[#1A1A1A]/30 font-medium text-sm outline-none focus:border-[#F5A623] transition-colors" required>
+              <span class="form__err" id="emailErr"></span>
+            </div>
+            <div>
+              <label for="type" class="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/60 mb-2">문의 유형 <span class="text-[#F5A623]">*</span></label>
+              <select id="type" name="type"
+                class="w-full px-5 py-3.5 rounded-2xl border-2 border-[#1A1A1A]/10 text-[#1A1A1A] font-medium text-sm outline-none focus:border-[#F5A623] transition-colors bg-white appearance-none" required>
+                <option value="">문의 유형 선택</option>
+                <option value="개인 문의">개인 문의</option>
+                <option value="기업 제휴">기업 제휴</option>
+                <option value="투자 문의">투자 문의</option>
+              </select>
+              <span class="form__err" id="typeErr"></span>
+            </div>
+          </div>
+
+          <div class="mb-6">
+            <label for="message" class="block text-xs font-bold uppercase tracking-widest text-[#1A1A1A]/60 mb-2">문의 내용 <span class="text-[#F5A623]">*</span></label>
+            <textarea id="message" name="message" rows="5" placeholder="문의 내용을 자유롭게 입력해주세요"
+              class="w-full px-5 py-3.5 rounded-2xl border-2 border-[#1A1A1A]/10 text-[#1A1A1A] placeholder-[#1A1A1A]/30 font-medium text-sm outline-none focus:border-[#F5A623] transition-colors resize-none" required></textarea>
+            <span class="form__err" id="messageErr"></span>
+          </div>
+
+          <!-- Privacy -->
+          <div class="mb-8">
+            <label class="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" id="privacy" name="privacy" class="sr-only" required>
+              <div id="checkmark" class="w-6 h-6 min-w-[24px] rounded-md border-2 border-[#1A1A1A]/20 flex items-center justify-center transition-colors mt-0.5 bg-white">
+              </div>
+              <span class="text-sm text-[#1A1A1A]/70 leading-relaxed">
+                <strong class="text-[#1A1A1A]">[필수]</strong> 개인정보 수집 및 이용에 동의합니다.
+                <button type="button" class="text-[#F5A623] font-bold underline ml-1 text-xs" id="privacyToggle">내용 보기</button>
+              </span>
+            </label>
+            <span class="form__err" id="privacyErr"></span>
+            <div class="privacy-box bg-[#FFFBF0] rounded-2xl p-5 mt-3 text-xs text-[#1A1A1A]/60 leading-relaxed space-y-1.5 border border-[#F5A623]/20" id="privacyBox">
+              <p><strong>수집 항목:</strong> 이름, 연락처, 이메일, 문의 내용</p>
+              <p><strong>수집 목적:</strong> 고객 문의 처리 및 답변 제공</p>
+              <p><strong>보유 기간:</strong> 문의 처리 완료 후 3년</p>
+              <p>귀하는 개인정보 수집 및 이용 동의를 거부할 권리가 있으나, 거부 시 문의 접수가 제한될 수 있습니다.</p>
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn"
+            class="w-full rounded-full bg-[#F5A623] px-8 py-4 text-base font-bold text-white shadow-md hover:bg-[#E09318] transition-all hover:scale-[1.02] active:scale-[0.98]">
+            제출하기
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== SERVICE FEATURES ===== -->
+    <section class="bg-white py-24 px-6 lg:px-8 border-t border-[#1A1A1A]/5">
+      <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-16">
+          <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-1">안심</span>
+          <h2 class="text-4xl lg:text-5xl font-black tracking-tight text-[#1A1A1A] uppercase">서비스 안내</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div class="bg-[#FFFBF0] rounded-3xl p-8 flex flex-col items-center text-center border border-[#F5A623]/20 hover:-translate-y-1 transition-transform duration-300 fade-up">
+            <div class="h-20 w-20 bg-white rounded-full flex items-center justify-center text-[#F5A623] mb-6 shadow-sm border border-[#F5A623]/20">
+              <iconify-icon icon="solar:shield-check-linear" width="36" height="36"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-black text-[#1A1A1A] mb-3 uppercase">법적 효력 보장</h3>
+            <p class="text-sm text-[#1A1A1A]/65 leading-relaxed">망고노트는 법적 효력을 갖춘 유언노트로, 공증 가능한 형식으로 제작됩니다.</p>
+          </div>
+
+          <div class="bg-[#FFFBF0] rounded-3xl p-8 flex flex-col items-center text-center border border-[#F5A623]/20 hover:-translate-y-1 transition-transform duration-300 fade-up">
+            <div class="h-20 w-20 bg-white rounded-full flex items-center justify-center text-[#F5A623] mb-6 shadow-sm border border-[#F5A623]/20">
+              <iconify-icon icon="solar:heart-angle-linear" width="36" height="36"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-black text-[#1A1A1A] mb-3 uppercase">따뜻한 동행</h3>
+            <p class="text-sm text-[#1A1A1A]/65 leading-relaxed">전문 엔딩 플래너가 1:1로 함께하며, 나만의 마지막 여정을 따뜻하게 설계합니다.</p>
+          </div>
+
+          <div class="bg-[#FFFBF0] rounded-3xl p-8 flex flex-col items-center text-center border border-[#F5A623]/20 hover:-translate-y-1 transition-transform duration-300 fade-up">
+            <div class="h-20 w-20 bg-white rounded-full flex items-center justify-center text-[#F5A623] mb-6 shadow-sm border border-[#F5A623]/20">
+              <iconify-icon icon="solar:lock-keyhole-minimalistic-linear" width="36" height="36"></iconify-icon>
+            </div>
+            <h3 class="text-xl font-black text-[#1A1A1A] mb-3 uppercase">개인정보 보호</h3>
+            <p class="text-sm text-[#1A1A1A]/65 leading-relaxed">수집된 개인정보는 엄격히 보호되며, SSL 보안 인증서가 필수 적용되어 안전합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== DARK CTA ===== -->
+    <section class="bg-[#1A1A1A] py-24 px-6 lg:px-8 relative overflow-hidden">
+      <div class="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-[#F5A623] rounded-full opacity-5 blur-3xl pointer-events-none"></div>
+      <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-64 h-64 bg-[#FFFBF0] rounded-full opacity-5 blur-3xl pointer-events-none"></div>
+      <div class="mx-auto max-w-4xl text-center relative z-10">
+        <span class="font-handwrite text-4xl lg:text-5xl text-[#F5A623] block mb-4">나만의 엔딩을 준비하세요</span>
+        <h2 class="text-4xl lg:text-6xl font-black tracking-tight text-white uppercase mb-6">망고하다와<br>함께라면</h2>
+        <p class="text-base leading-relaxed text-white/70 mb-10 max-w-2xl mx-auto">
+          죽음이라는 주제를 따뜻하게 바라볼 수 있도록, 망고하다가 함께합니다.
+          지금 망고노트를 시작하거나 전문 플래너와 상담해 보세요.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer"
+             class="rounded-full bg-[#F5A623] px-8 py-4 text-base font-bold text-white shadow-lg hover:bg-[#E09318] hover:scale-105 transition-all duration-300">
+            망고노트 구매하기
+          </a>
+          <a href="#contact"
+             class="hover:bg-[#F5A623] hover:text-white transition-all duration-300 text-base font-bold text-[#F5A623] border-[#F5A623] border-2 rounded-full px-8 py-3.5">
+            무료 상담 신청
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="bg-[#FFFBF0] border-t border-[#1A1A1A]/10">
+    <div class="mx-auto max-w-7xl px-6 py-12 lg:px-8 flex flex-col items-center">
+
+      <!-- Social Icons -->
+      <div class="flex space-x-3 mb-8">
+        <a href="https://www.instagram.com/mangohada_official" target="_blank" rel="noopener noreferrer"
+           class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A1A1A] text-[#F5A623] hover:bg-[#F5A623] hover:text-white transition-colors">
+          <iconify-icon icon="mdi:instagram" width="20" height="20"></iconify-icon>
+        </a>
+        <a href="https://blog.naver.com/foryoumangohada" target="_blank" rel="noopener noreferrer"
+           class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A1A1A] text-[#F5A623] hover:bg-[#F5A623] hover:text-white transition-colors">
+          <iconify-icon icon="simple-icons:naver" width="18" height="18"></iconify-icon>
+        </a>
+        <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer"
+           class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A1A1A] text-[#F5A623] hover:bg-[#F5A623] hover:text-white transition-colors">
+          <iconify-icon icon="solar:bag-4-linear" width="20" height="20"></iconify-icon>
+        </a>
+      </div>
+
+      <!-- Links -->
+      <nav class="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-8 text-sm font-semibold text-[#1A1A1A]">
+        <a href="#intro"    class="hover:text-[#F5A623] transition-colors">회사소개</a>
+        <span class="text-[#1A1A1A]/30">/</span>
+        <a href="#services" class="hover:text-[#F5A623] transition-colors">서비스 소개</a>
+        <span class="text-[#1A1A1A]/30">/</span>
+        <a href="#news"     class="hover:text-[#F5A623] transition-colors">소식</a>
+        <span class="text-[#1A1A1A]/30">/</span>
+        <a href="#contact"  class="hover:text-[#F5A623] transition-colors">문의하기</a>
+        <span class="text-[#1A1A1A]/30">/</span>
+        <a href="https://smartstore.naver.com/mangohada" target="_blank" rel="noopener noreferrer" class="hover:text-[#F5A623] transition-colors">스마트스토어</a>
+      </nav>
+
+      <p class="text-xs text-[#1A1A1A]/40 text-center">
+        © 2025 망고하다(Mangohada). All rights reserved. | 웰다잉 전문 기업
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===== SUCCESS MODAL ===== -->
+  <div class="modal fixed inset-0 z-[200] items-center justify-center" id="modal" role="dialog" aria-modal="true">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" id="modalBackdrop"></div>
+    <div class="relative z-10 bg-white rounded-3xl p-12 text-center max-w-sm w-[90%] shadow-2xl border border-[#1A1A1A]/5">
+      <div class="flex justify-center mb-5">
+        <div class="w-16 h-16 rounded-full bg-[#FFFBF0] border-2 border-[#F5A623] flex items-center justify-center">
+          <iconify-icon icon="solar:check-circle-bold" width="40" height="40" class="text-[#F5A623]"></iconify-icon>
+        </div>
+      </div>
+      <h3 class="text-xl font-black mb-3">문의가 접수되었습니다</h3>
+      <p class="text-sm text-[#1A1A1A]/60 leading-relaxed mb-8">소중한 문의 감사합니다.<br>빠른 시일 내에 답변 드리겠습니다.</p>
+      <button id="modalClose" class="w-full rounded-full bg-[#F5A623] py-3.5 text-base font-bold text-white hover:bg-[#E09318] transition-colors">
+        확인
+      </button>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
