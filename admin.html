@@ -185,8 +185,16 @@
 
     <!-- 아티클 관리 -->
     <div id="sec-articles" class="hidden">
-      <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">아티클 관리</h2>
-      <p class="text-sm text-gray-400 mb-8">등록된 아티클 목록</p>
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">아티클 관리</h2>
+          <p class="text-sm text-gray-400">등록된 아티클 목록</p>
+        </div>
+        <button onclick="openArticleModal()" class="flex items-center gap-2 px-5 py-2.5 bg-[#F5A623] text-white text-sm font-bold rounded-xl hover:bg-[#E09318] transition-all">
+          <iconify-icon icon="solar:add-circle-bold" width="16"></iconify-icon>
+          등록하기
+        </button>
+      </div>
       <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div id="articleTable"></div>
       </div>
@@ -202,6 +210,35 @@
     </div>
 
   </main>
+</div>
+
+<!-- ── 아티클 모달 ── -->
+<div id="articleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-3xl w-full max-w-xl mx-4 shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+      <h3 id="modalTitle" class="text-lg font-black text-[#1A1A1A]">아티클 등록</h3>
+      <button onclick="closeArticleModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all">
+        <iconify-icon icon="solar:close-circle-linear" width="16"></iconify-icon>
+      </button>
+    </div>
+    <div class="px-8 py-6 space-y-5">
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">제목</label>
+        <input id="articleTitleInput" type="text" placeholder="아티클 제목을 입력하세요"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all">
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">내용</label>
+        <textarea id="articleContentInput" rows="8" placeholder="아티클 내용을 입력하세요"
+          class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all resize-none"></textarea>
+      </div>
+      <p id="articleErr" class="text-xs text-red-400 hidden"></p>
+    </div>
+    <div class="px-8 pb-8 flex gap-3">
+      <button onclick="closeArticleModal()" class="flex-1 py-3 rounded-xl border-2 border-gray-100 text-sm font-bold text-gray-400 hover:bg-gray-50 transition-all">취소</button>
+      <button onclick="saveArticle()" id="articleSaveBtn" class="flex-1 py-3 rounded-xl bg-[#F5A623] text-white text-sm font-bold hover:bg-[#E09318] transition-all">저장하기</button>
+    </div>
+  </div>
 </div>
 
 <script src="js/admin.js"></script>

@@ -72,6 +72,7 @@ async function loadAll() {
     loadUsers(),
     loadAdminWills(),
     loadAdminHappiness(),
+    loadArticles(),
   ]);
 }
 
@@ -257,9 +258,102 @@ async function loadAdminHappiness() {
 }
 
 /* ── 아티클 관리 ── */
+let editingArticleId = null;
+
 async function loadArticles() {
+  const { data } = await sb
+    .from('articles')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  const list = data || [];
   const el = document.getElementById('articleTable');
-  el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">등록된 아티클이 없습니다</p>';
+
+  if (!list.length) {
+    el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">등록된 아티클이 없습니다</p>';
+    return;
+  }
+
+  el.innerHTML = `
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">제목</th>
+          <th class="text-left px-6 py-3">내용 미리보기</th>
+          <th class="text-left px-6 py-3">등록일</th>
+          <th class="text-left px-6 py-3">관리</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(a => `
+          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 font-bold text-[#1A1A1A] max-w-[180px]"><p class="truncate">${esc(a.title)}</p></td>
+            <td class="px-6 py-4 text-gray-500 max-w-xs"><p class="truncate">${esc(a.content)}</p></td>
+            <td class="px-6 py-4 text-gray-400 whitespace-nowrap">${fmtDate(a.created_at)}</td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2">
+                <button onclick="editArticle('${a.id}')"
+                  class="px-3 py-1.5 rounded-lg bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 transition-all">수정</button>
+                <button onclick="deleteArticle('${a.id}')"
+                  class="px-3 py-1.5 rounded-lg bg-red-50 text-xs font-bold text-red-400 hover:bg-red-100 transition-all">삭제</button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function openArticleModal(article = null) {
+  editingArticleId = article ? article.id : null;
+  document.getElementById('modalTitle').textContent = article ? '아티클 수정' : '아티클 등록';
+  document.getElementById('articleTitleInput').value   = article ? article.title   : '';
+  document.getElementById('articleContentInput').value = article ? article.content : '';
+  document.getElementById('articleErr').classList.add('hidden');
+  document.getElementById('articleModal').classList.remove('hidden');
+}
+
+function closeArticleModal() {
+  document.getElementById('articleModal').classList.add('hidden');
+  editingArticleId = null;
+}
+
+async function saveArticle() {
+  const title   = document.getElementById('articleTitleInput').value.trim();
+  const content = document.getElementById('articleContentInput').value.trim();
+  const err     = document.getElementById('articleErr');
+  const btn     = document.getElementById('articleSaveBtn');
+
+  if (!title)   { err.textContent = '제목을 입력해주세요'; err.classList.remove('hidden'); return; }
+  if (!content) { err.textContent = '내용을 입력해주세요'; err.classList.remove('hidden'); return; }
+
+  btn.textContent = '저장 중...'; btn.disabled = true;
+
+  let error;
+  if (editingArticleId) {
+    ({ error } = await sb.from('articles').update({ title, content, updated_at: new Date().toISOString() }).eq('id', editingArticleId));
+  } else {
+    ({ error } = await sb.from('articles').insert({ title, content }));
+  }
+
+  btn.textContent = '저장하기'; btn.disabled = false;
+
+  if (error) { err.textContent = '저장에 실패했습니다'; err.classList.remove('hidden'); return; }
+
+  closeArticleModal();
+  await loadArticles();
+}
+
+async function editArticle(id) {
+  const { data } = await sb.from('articles').select('*').eq('id', id).single();
+  if (data) openArticleModal(data);
+}
+
+async function deleteArticle(id) {
+  if (!confirm('정말 삭제하시겠습니까?')) return;
+  await sb.from('articles').delete().eq('id', id);
+  await loadArticles();
 }
 
 /* ── 회원 목록 ── */
