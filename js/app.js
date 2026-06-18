@@ -280,7 +280,7 @@ async function handleSignup() {
   setLoading(btn, false, '가입하기');
 
   if (error) {
-    showMsg(errEl, '회원가입에 실패했습니다. 이미 사용 중인 이메일일 수 있습니다.');
+    showMsg(errEl, error.message);
     return;
   }
 
