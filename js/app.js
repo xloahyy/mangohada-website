@@ -188,6 +188,7 @@ async function enterApp(user) {
     || user.email.split('@')[0];
 
   document.getElementById('welcomeName').textContent = name;
+  document.getElementById('sidebarUserName').textContent = name;
 
   // 화면 전환
   document.getElementById('authScreen').classList.add('hidden');
@@ -318,7 +319,6 @@ function switchTab(tab) {
     const isActive = t === tab;
     content.classList.toggle('hidden', !isActive);
     nav.classList.toggle('active', isActive);
-    nav.classList.toggle('text-gray-300', !isActive);
     if (icon) icon.setAttribute('icon', isActive ? TAB_ICONS[t].active : TAB_ICONS[t].inactive);
   });
 }
@@ -367,11 +367,11 @@ function renderWills() {
 
   document.getElementById('willCountLabel').textContent = `총 ${list.length}개`;
 
-  const listEl  = document.getElementById('willList');
+  const gridEl  = document.getElementById('willGrid');
   const emptyEl = document.getElementById('willEmpty');
 
   if (list.length === 0) {
-    listEl.innerHTML = '';
+    gridEl.innerHTML = '';
     emptyEl.classList.remove('hidden');
     return;
   }
@@ -389,31 +389,34 @@ function renderWills() {
   Object.keys(grouped)
     .sort((a, b) => b - a)
     .forEach(year => {
-      html += `<p class="text-[11px] font-black text-gray-300 uppercase tracking-widest pt-3 pb-1 border-b border-gray-100 mb-2">${year}</p>`;
+      html += `<div class="will-year-label">${year}</div>`;
       grouped[year].forEach(w => {
         const d = new Date(w.created_at);
-        const dateStr = `${pad(d.getMonth() + 1)}/${pad(d.getDate())}`;
+        const dateStr = `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`;
         const tc = TYPE_CONFIG[w.type] || TYPE_CONFIG.text;
         html += `
-          <div onclick="openWillDetail('${w.id}')"
-            class="flex items-center gap-3 p-3.5 rounded-2xl border-2 border-gray-50
-                   hover:border-[#F5A623]/30 hover:bg-[#FFFBF0] transition-all cursor-pointer">
-            <div class="w-10 h-10 ${tc.bg} rounded-xl flex items-center justify-center flex-shrink-0">
-              <iconify-icon icon="${tc.icon}" width="20" class="${tc.color}"></iconify-icon>
+          <div onclick="openWillDetail('${w.id}')" class="will-card">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 ${tc.bg} rounded-xl flex items-center justify-center flex-shrink-0">
+                  <iconify-icon icon="${tc.icon}" width="18" class="${tc.color}"></iconify-icon>
+                </div>
+                <span class="text-xs font-bold text-gray-400">${tc.label}</span>
+              </div>
+              <span class="text-xs text-gray-300 font-medium">${dateStr}</span>
             </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-bold text-[#1A1A1A] truncate">${esc(w.title)}</p>
-              ${w.recipient ? `<p class="text-xs text-gray-400 mt-0.5 truncate">→ ${esc(w.recipient)}</p>` : ''}
+            <div>
+              <p class="text-base font-bold text-[#1A1A1A] leading-snug mb-1">${esc(w.title)}</p>
+              ${w.recipient ? `<p class="text-xs text-gray-400">→ ${esc(w.recipient)}</p>` : ''}
             </div>
-            <div class="text-right flex-shrink-0 ml-2">
-              <p class="text-[11px] font-bold text-gray-300">${dateStr}</p>
-              <p class="text-[10px] text-gray-300 mt-0.5">${tc.label}</p>
-            </div>
+            ${w.type === 'text' && w.content
+              ? `<p class="text-sm text-gray-400 line-clamp-2 leading-relaxed">${esc(w.content)}</p>`
+              : ''}
           </div>`;
       });
     });
 
-  listEl.innerHTML = html;
+  gridEl.innerHTML = html;
 }
 
 /* ========================
@@ -607,16 +610,17 @@ async function saveWill() {
 ======================== */
 function renderExperts() {
   document.getElementById('expertGrid').innerHTML = EXPERTS.map(e => `
-    <button class="text-left bg-white border-2 border-gray-100 rounded-3xl p-4
-                   hover:border-[#F5A623]/30 hover:shadow-md transition-all active:scale-95">
-      <div class="w-12 h-12 ${e.bg} rounded-2xl flex items-center justify-center mb-3">
-        <iconify-icon icon="${e.icon}" width="24" class="${e.color}"></iconify-icon>
+    <button class="text-left bg-white border-1.5 border-gray-100 rounded-2xl p-6
+                   hover:border-[#F5A623]/40 hover:shadow-lg transition-all active:scale-[0.98]"
+      style="border: 1.5px solid #F3F4F6;">
+      <div class="w-14 h-14 ${e.bg} rounded-2xl flex items-center justify-center mb-4">
+        <iconify-icon icon="${e.icon}" width="28" class="${e.color}"></iconify-icon>
       </div>
-      <h4 class="text-sm font-black text-[#1A1A1A] mb-1">${e.title}</h4>
-      <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">${e.desc}</p>
-      <div class="mt-3 flex items-center gap-1 text-[#F5A623]">
+      <h4 class="text-base font-black text-[#1A1A1A] mb-2">${e.title}</h4>
+      <p class="text-sm text-gray-400 leading-relaxed mb-4">${e.desc}</p>
+      <div class="flex items-center gap-1.5 text-[#F5A623]">
         <span class="text-xs font-bold">상담 신청</span>
-        <iconify-icon icon="solar:arrow-right-linear" width="11"></iconify-icon>
+        <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
       </div>
     </button>
   `).join('');
@@ -678,16 +682,16 @@ function filterArticles() {
   }
 
   el.innerHTML = filtered.map(a => `
-    <div class="flex gap-3 p-4 rounded-2xl border-2 border-gray-50
-                hover:border-[#F5A623]/30 hover:bg-[#FFFBF0] transition-all cursor-pointer">
+    <div class="flex gap-4 p-5 bg-white rounded-2xl border hover:border-[#F5A623]/40
+                hover:shadow-md transition-all cursor-pointer" style="border: 1.5px solid #F3F4F6;">
       <div class="flex-1 min-w-0">
-        <span class="inline-block text-[10px] font-bold text-[#F5A623] bg-[#FFF8E6] rounded-full px-2.5 py-1 mb-2">
+        <span class="inline-block text-[11px] font-bold text-[#F5A623] bg-[#FFF8E6] rounded-full px-3 py-1 mb-3">
           ${a.tag}
         </span>
-        <h4 class="text-sm font-bold text-[#1A1A1A] leading-snug mb-1.5">${esc(a.title)}</h4>
-        <p class="text-xs text-gray-400 leading-relaxed line-clamp-2">${esc(a.preview)}</p>
+        <h4 class="text-base font-bold text-[#1A1A1A] leading-snug mb-2">${esc(a.title)}</h4>
+        <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">${esc(a.preview)}</p>
       </div>
-      <div class="w-16 h-16 ${a.bg} rounded-2xl flex items-center justify-center text-3xl flex-shrink-0">
+      <div class="w-20 h-20 ${a.bg} rounded-2xl flex items-center justify-center text-4xl flex-shrink-0">
         ${a.emoji}
       </div>
     </div>

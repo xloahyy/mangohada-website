@@ -10,27 +10,74 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/app.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body>
 
-<div class="app-wrap">
+<!-- ======================================================
+     AUTH SCREEN  —  좌: 브랜드 패널 / 우: 폼
+====================================================== -->
+<div id="authScreen" class="auth-screen">
 
-  <!-- ======================================================
-       AUTH SCREEN
-  ====================================================== -->
-  <div id="authScreen" class="min-h-screen flex flex-col bg-white">
-
-    <!-- 로고 영역 -->
-    <div class="px-6 pt-16 pb-8 text-center">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-[#F5A623] rounded-2xl mb-5 shadow-lg">
-        <span class="text-3xl font-black text-white">망</span>
+  <!-- 좌측 브랜드 패널 -->
+  <div class="auth-brand">
+    <div class="auth-brand__inner">
+      <div class="auth-brand__logo">
+        <div class="w-14 h-14 bg-[#F5A623] rounded-2xl flex items-center justify-center mb-5 shadow-xl">
+          <span class="text-3xl font-black text-white">망</span>
+        </div>
+        <h1 class="text-4xl font-black text-white leading-tight mb-2">망고하다</h1>
+        <p class="text-sm font-semibold text-white/50 tracking-widest uppercase">Well-Dying Studio</p>
       </div>
-      <h1 class="text-3xl font-black text-[#1A1A1A] mb-1">망고하다</h1>
-      <p class="text-sm text-gray-400 font-medium">나만의 엔딩을 디자인하다</p>
-    </div>
 
-    <!-- 탭 (로그인 / 회원가입) -->
-    <div class="px-6 mb-6">
-      <div class="flex bg-gray-100 rounded-2xl p-1">
+      <div class="auth-brand__headline">
+        <p class="text-5xl font-black text-white leading-tight mb-4">
+          나만의<br><span class="text-[#F5A623]">엔딩을</span><br>디자인하다
+        </p>
+        <p class="text-base text-white/60 leading-relaxed max-w-xs">
+          삶의 마지막 순간을 따뜻하게 계획하는 것.<br>
+          유언 작성부터 전문가 매칭까지, 망고하다가 함께합니다.
+        </p>
+      </div>
+
+      <div class="auth-brand__features">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <iconify-icon icon="solar:document-text-bold" width="16" class="text-[#F5A623]"></iconify-icon>
+          </div>
+          <span class="text-sm text-white/70 font-medium">디지털 유언 작성 및 영구 보관</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <iconify-icon icon="solar:users-group-rounded-bold" width="16" class="text-[#F5A623]"></iconify-icon>
+          </div>
+          <span class="text-sm text-white/70 font-medium">변호사·재무설계 등 전문가 매칭</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+            <iconify-icon icon="solar:lock-keyhole-minimalistic-bold" width="16" class="text-[#F5A623]"></iconify-icon>
+          </div>
+          <span class="text-sm text-white/70 font-medium">본인 계정에서만 접근 가능한 보안</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 우측 폼 패널 -->
+  <div class="auth-form">
+    <div class="auth-form__inner">
+
+      <!-- 모바일 전용 로고 -->
+      <div class="lg:hidden text-center mb-8">
+        <div class="inline-flex items-center justify-center w-12 h-12 bg-[#F5A623] rounded-xl mb-3">
+          <span class="text-xl font-black text-white">망</span>
+        </div>
+        <h1 class="text-2xl font-black text-[#1A1A1A]">망고하다</h1>
+      </div>
+
+      <h2 class="text-2xl font-black text-[#1A1A1A] mb-2">시작하기</h2>
+      <p class="text-sm text-gray-400 mb-8">계정으로 로그인하거나 새로 가입하세요</p>
+
+      <!-- 탭 -->
+      <div class="flex bg-gray-100 rounded-2xl p-1 mb-7">
         <button id="loginTabBtn" onclick="switchAuthTab('login')"
           class="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all bg-white text-[#1A1A1A] shadow-sm">
           로그인
@@ -40,381 +87,388 @@
           회원가입
         </button>
       </div>
-    </div>
 
-    <!-- 로그인 폼 -->
-    <div id="loginForm" class="px-6 flex-1">
-      <div class="space-y-4">
-        <div>
-          <label class="form-label">이메일</label>
-          <input id="loginEmail" type="email" placeholder="example@email.com" class="form-input">
+      <!-- 로그인 폼 -->
+      <div id="loginForm">
+        <div class="space-y-4">
+          <div>
+            <label class="form-label">이메일</label>
+            <input id="loginEmail" type="email" placeholder="example@email.com" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">비밀번호</label>
+            <input id="loginPassword" type="password" placeholder="비밀번호를 입력해주세요" class="form-input">
+          </div>
+          <p id="loginError" class="text-xs text-red-400 hidden"></p>
+          <button onclick="handleLogin()"
+            class="w-full py-4 rounded-2xl bg-[#F5A623] text-white text-sm font-bold hover:bg-[#E09318] transition-colors mt-2">
+            로그인
+          </button>
         </div>
-        <div>
-          <label class="form-label">비밀번호</label>
-          <input id="loginPassword" type="password" placeholder="비밀번호를 입력해주세요" class="form-input">
-        </div>
-        <p id="loginError" class="text-xs text-red-400 hidden"></p>
-        <button onclick="handleLogin()"
-          class="w-full py-4 rounded-2xl bg-[#F5A623] text-white text-base font-bold mt-2 hover:bg-[#E09318] transition-colors active:scale-95">
-          로그인
-        </button>
       </div>
-    </div>
 
-    <!-- 회원가입 폼 -->
-    <div id="signupForm" class="px-6 flex-1 hidden">
-      <div class="space-y-4">
-        <div>
-          <label class="form-label">이름</label>
-          <input id="signupName" type="text" placeholder="이름을 입력해주세요" class="form-input">
+      <!-- 회원가입 폼 -->
+      <div id="signupForm" class="hidden">
+        <div class="space-y-4">
+          <div>
+            <label class="form-label">이름</label>
+            <input id="signupName" type="text" placeholder="이름을 입력해주세요" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">이메일</label>
+            <input id="signupEmail" type="email" placeholder="example@email.com" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">비밀번호</label>
+            <input id="signupPassword" type="password" placeholder="8자 이상 입력해주세요" class="form-input">
+          </div>
+          <p id="signupError" class="text-xs text-red-400 hidden"></p>
+          <button onclick="handleSignup()"
+            class="w-full py-4 rounded-2xl bg-[#1A1A1A] text-white text-sm font-bold hover:bg-black transition-colors mt-2">
+            가입하기
+          </button>
         </div>
-        <div>
-          <label class="form-label">이메일</label>
-          <input id="signupEmail" type="email" placeholder="example@email.com" class="form-input">
-        </div>
-        <div>
-          <label class="form-label">비밀번호</label>
-          <input id="signupPassword" type="password" placeholder="8자 이상 입력해주세요" class="form-input">
-        </div>
-        <p id="signupError" class="text-xs text-red-400 hidden"></p>
-        <button onclick="handleSignup()"
-          class="w-full py-4 rounded-2xl bg-[#1A1A1A] text-white text-base font-bold mt-2 hover:bg-black transition-colors active:scale-95">
-          가입하기
-        </button>
       </div>
-    </div>
 
-    <!-- 하단 링크 -->
-    <div class="px-6 py-8 text-center">
-      <a href="index.html" class="text-sm text-gray-300 hover:text-[#F5A623] transition-colors">
-        ← 홈페이지로 돌아가기
-      </a>
+      <div class="mt-8 pt-6 border-t border-gray-100 text-center">
+        <a href="index.html" class="text-xs text-gray-300 hover:text-[#F5A623] transition-colors">
+          ← 홈페이지로 돌아가기
+        </a>
+      </div>
     </div>
   </div>
+</div>
 
 
-  <!-- ======================================================
-       APP SCREEN
-  ====================================================== -->
-  <div id="appScreen" class="hidden min-h-screen flex flex-col bg-white">
+<!-- ======================================================
+     APP SCREEN  —  좌: 사이드바 / 우: 메인 콘텐츠
+====================================================== -->
+<div id="appScreen" class="app-screen hidden">
 
-    <!-- 앱 헤더 (sticky) -->
-    <header class="sticky top-0 z-40 bg-white border-b border-gray-100 px-5 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-[#F5A623] rounded-xl flex items-center justify-center">
-          <span class="text-xs font-black text-white">망</span>
+  <!-- 사이드바 -->
+  <aside class="sidebar">
+    <div class="sidebar__top">
+      <!-- 로고 -->
+      <div class="sidebar__logo">
+        <div class="w-9 h-9 bg-[#F5A623] rounded-xl flex items-center justify-center flex-shrink-0">
+          <span class="text-sm font-black text-white">망</span>
         </div>
-        <span class="text-base font-black text-[#1A1A1A]">망고하다</span>
+        <div>
+          <p class="text-base font-black text-[#1A1A1A] leading-none">망고하다</p>
+          <p class="text-[10px] text-gray-400 font-medium mt-0.5">Well-Dying Studio</p>
+        </div>
       </div>
-      <button onclick="handleLogout()" class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-[#1A1A1A] transition-colors py-1.5 px-3 rounded-xl hover:bg-gray-100">
-        <iconify-icon icon="solar:logout-2-linear" width="15"></iconify-icon>
+
+      <!-- 구분선 -->
+      <div class="h-px bg-gray-100 my-5"></div>
+
+      <!-- 내비게이션 -->
+      <nav class="space-y-1">
+        <button onclick="switchTab('home')" id="navHome" class="sidebar-nav active">
+          <iconify-icon icon="solar:home-2-bold" width="18"></iconify-icon>
+          <span>홈</span>
+        </button>
+        <button onclick="switchTab('will')" id="navWill" class="sidebar-nav">
+          <iconify-icon icon="solar:document-text-linear" width="18"></iconify-icon>
+          <span>내 유언</span>
+        </button>
+        <button onclick="switchTab('expert')" id="navExpert" class="sidebar-nav">
+          <iconify-icon icon="solar:users-group-rounded-linear" width="18"></iconify-icon>
+          <span>전문가</span>
+        </button>
+        <button onclick="switchTab('article')" id="navArticle" class="sidebar-nav">
+          <iconify-icon icon="solar:book-2-linear" width="18"></iconify-icon>
+          <span>아티클</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- 하단 유저 정보 -->
+    <div class="sidebar__bottom">
+      <div class="flex items-center gap-3 px-3 py-2 rounded-2xl bg-gray-50 mb-2">
+        <div class="w-8 h-8 bg-[#F5A623]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+          <iconify-icon icon="solar:user-bold" width="16" class="text-[#F5A623]"></iconify-icon>
+        </div>
+        <p class="text-sm font-bold text-[#1A1A1A] truncate flex-1" id="sidebarUserName">사용자</p>
+      </div>
+      <button onclick="handleLogout()" class="sidebar-nav text-gray-400 hover:text-red-400 hover:bg-red-50 w-full">
+        <iconify-icon icon="solar:logout-2-linear" width="18"></iconify-icon>
         <span>로그아웃</span>
       </button>
-    </header>
+    </div>
+  </aside>
 
-    <!-- 탭 콘텐츠 영역 -->
-    <main class="flex-1 overflow-y-auto pb-24">
+  <!-- 메인 콘텐츠 영역 -->
+  <main class="main-content">
 
-      <!-- ─── HOME TAB ─── -->
-      <div id="tabHome" class="tab-content">
+    <!-- ─── HOME TAB ─── -->
+    <div id="tabHome" class="tab-content">
 
-        <!-- 웰컴 -->
-        <div class="px-5 pt-6 pb-4">
+      <!-- 페이지 헤더 -->
+      <div class="page-header">
+        <div>
           <p class="text-sm text-gray-400 font-medium">안녕하세요 👋</p>
-          <h2 class="text-2xl font-black text-[#1A1A1A] mt-0.5 leading-snug">
-            <span id="welcomeName">사용자</span>님,<br>
-            <span class="text-[#F5A623]">오늘도 소중한</span> 하루 되세요
+          <h2 class="text-3xl font-black text-[#1A1A1A] mt-0.5">
+            <span id="welcomeName">사용자</span>님, <span class="text-[#F5A623]">오늘도 소중한 하루</span> 되세요
           </h2>
         </div>
+      </div>
 
-        <!-- 행복저금 배너 -->
-        <div class="px-5 mb-5">
+      <!-- 2열 그리드 -->
+      <div class="home-grid">
+
+        <!-- 좌열 -->
+        <div class="space-y-5">
+
+          <!-- 행복저금 배너 -->
           <button onclick="switchTab('will')"
-            class="w-full bg-gradient-to-r from-[#F5A623] to-[#FFCC44] rounded-3xl p-5 shadow-md hover:shadow-lg transition-all text-left">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-xs font-bold text-white/70 uppercase tracking-wider mb-1">행복저금</p>
-                <p class="text-2xl font-black text-white">
-                  <span id="willCount">0</span>개
-                  <span class="text-base font-semibold ml-1">저장됨</span>
-                </p>
-                <p class="text-xs text-white/70 mt-1">나의 소중한 기록들 →</p>
+            class="w-full bg-gradient-to-br from-[#F5A623] to-[#FFCC44] rounded-3xl p-7 text-left hover:shadow-xl transition-all shadow-lg shadow-[#F5A623]/20">
+            <p class="text-xs font-bold text-white/70 uppercase tracking-widest mb-2">행복저금</p>
+            <p class="text-4xl font-black text-white mb-1">
+              <span id="willCount">0</span>
+              <span class="text-xl font-bold ml-1">개 저장됨</span>
+            </p>
+            <p class="text-sm text-white/70">나의 소중한 기록들 →</p>
+            <div class="mt-5 flex items-center gap-2">
+              <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <iconify-icon icon="solar:document-text-bold" width="22" class="text-white"></iconify-icon>
               </div>
-              <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-                <iconify-icon icon="solar:document-text-bold" width="32" class="text-white"></iconify-icon>
+              <div class="w-7 h-7 bg-white/15 rounded-lg flex items-center justify-center">
+                <iconify-icon icon="solar:gallery-bold" width="15" class="text-white"></iconify-icon>
+              </div>
+              <div class="w-7 h-7 bg-white/15 rounded-lg flex items-center justify-center">
+                <iconify-icon icon="solar:video-frame-play-vertical-bold" width="15" class="text-white"></iconify-icon>
               </div>
             </div>
           </button>
-        </div>
 
-        <!-- 전문가 퀵메뉴 -->
-        <div class="px-5 mb-5">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-base font-black text-[#1A1A1A]">전문가 서비스</h3>
-            <button onclick="switchTab('expert')" class="text-xs text-[#F5A623] font-bold">전체보기 →</button>
-          </div>
-          <div class="grid grid-cols-5 gap-2">
-            <button onclick="switchTab('expert')" class="expert-quick-btn">
-              <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center">
-                <iconify-icon icon="solar:diploma-linear" width="22" class="text-blue-400"></iconify-icon>
-              </div>
-              <span>변호사</span>
-            </button>
-            <button onclick="switchTab('expert')" class="expert-quick-btn">
-              <div class="w-11 h-11 bg-purple-50 rounded-xl flex items-center justify-center">
-                <iconify-icon icon="solar:flower-linear" width="22" class="text-purple-400"></iconify-icon>
-              </div>
-              <span>장례<br>준비</span>
-            </button>
-            <button onclick="switchTab('expert')" class="expert-quick-btn">
-              <div class="w-11 h-11 bg-green-50 rounded-xl flex items-center justify-center">
-                <iconify-icon icon="solar:chart-2-linear" width="22" class="text-green-500"></iconify-icon>
-              </div>
-              <span>재무<br>설계</span>
-            </button>
-            <button onclick="switchTab('expert')" class="expert-quick-btn">
-              <div class="w-11 h-11 bg-orange-50 rounded-xl flex items-center justify-center">
-                <iconify-icon icon="solar:shield-bold-duotone" width="22" class="text-orange-400"></iconify-icon>
-              </div>
-              <span>보험</span>
-            </button>
-            <button onclick="switchTab('expert')" class="expert-quick-btn">
-              <div class="w-11 h-11 bg-pink-50 rounded-xl flex items-center justify-center">
-                <iconify-icon icon="solar:heart-shine-linear" width="22" class="text-pink-400"></iconify-icon>
-              </div>
-              <span>심리<br>상담</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 나의 마지막 초대장 -->
-        <div class="px-5 mb-5">
-          <h3 class="text-base font-black text-[#1A1A1A] mb-3">나의 마지막 초대장</h3>
-          <div class="border-2 border-gray-100 rounded-3xl p-5 hover:border-[#F5A623]/30 transition-colors">
-            <div class="flex items-center justify-between">
+          <!-- 나의 마지막 초대장 -->
+          <div class="card">
+            <div class="flex items-center justify-between mb-1">
+              <h3 class="section-title">나의 마지막 초대장</h3>
+            </div>
+            <p class="text-xs text-gray-400 mb-5">유언을 받아볼 소중한 분들을 관리하는 공간</p>
+            <div class="flex items-end justify-between">
               <div>
-                <p class="text-3xl font-black text-[#1A1A1A]"><span id="inviteCount">0</span>명</p>
-                <p class="text-sm text-gray-400 mt-0.5">초대된 사람</p>
+                <p class="text-5xl font-black text-[#1A1A1A]"><span id="inviteCount">0</span></p>
+                <p class="text-sm text-gray-400 mt-1">초대된 사람 (명)</p>
               </div>
-              <button class="px-4 py-2.5 rounded-xl border-2 border-[#1A1A1A] text-sm font-bold hover:bg-[#1A1A1A] hover:text-white transition-all">
+              <button class="px-5 py-2.5 rounded-xl border-2 border-[#1A1A1A] text-sm font-bold hover:bg-[#1A1A1A] hover:text-white transition-all">
                 관리하기
               </button>
             </div>
-            <p class="text-xs text-gray-400 mt-3 leading-relaxed">
-              마지막 초대장은 당신의 유언을 받아볼 소중한 분들을 관리하는 공간입니다.
-            </p>
           </div>
         </div>
 
-        <!-- 추천 아티클 -->
-        <div class="px-5 mb-6">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-base font-black text-[#1A1A1A]">추천 아티클</h3>
-            <button onclick="switchTab('article')" class="text-xs text-[#F5A623] font-bold">전체보기 →</button>
+        <!-- 우열 -->
+        <div class="space-y-5">
+
+          <!-- 전문가 퀵메뉴 -->
+          <div class="card">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="section-title">전문가 서비스</h3>
+              <button onclick="switchTab('expert')" class="text-xs text-[#F5A623] font-bold hover:underline">전체보기 →</button>
+            </div>
+            <div class="grid grid-cols-5 gap-2">
+              <button onclick="switchTab('expert')" class="expert-quick-btn">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                  <iconify-icon icon="solar:diploma-linear" width="22" class="text-blue-400"></iconify-icon>
+                </div>
+                <span>변호사</span>
+              </button>
+              <button onclick="switchTab('expert')" class="expert-quick-btn">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
+                  <iconify-icon icon="solar:flower-linear" width="22" class="text-purple-400"></iconify-icon>
+                </div>
+                <span>장례<br>준비</span>
+              </button>
+              <button onclick="switchTab('expert')" class="expert-quick-btn">
+                <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
+                  <iconify-icon icon="solar:chart-2-linear" width="22" class="text-green-500"></iconify-icon>
+                </div>
+                <span>재무<br>설계</span>
+              </button>
+              <button onclick="switchTab('expert')" class="expert-quick-btn">
+                <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
+                  <iconify-icon icon="solar:shield-bold-duotone" width="22" class="text-orange-400"></iconify-icon>
+                </div>
+                <span>보험</span>
+              </button>
+              <button onclick="switchTab('expert')" class="expert-quick-btn">
+                <div class="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center">
+                  <iconify-icon icon="solar:heart-shine-linear" width="22" class="text-pink-400"></iconify-icon>
+                </div>
+                <span>심리<br>상담</span>
+              </button>
+            </div>
           </div>
-          <div class="space-y-2" id="homeArticles"></div>
+
+          <!-- 추천 아티클 -->
+          <div class="card">
+            <div class="flex items-center justify-between mb-5">
+              <h3 class="section-title">추천 아티클</h3>
+              <button onclick="switchTab('article')" class="text-xs text-[#F5A623] font-bold hover:underline">전체보기 →</button>
+            </div>
+            <div class="space-y-3" id="homeArticles"></div>
+          </div>
         </div>
       </div>
+    </div>
 
 
-      <!-- ─── WILL TAB ─── -->
-      <div id="tabWill" class="tab-content hidden">
+    <!-- ─── WILL TAB ─── -->
+    <div id="tabWill" class="tab-content hidden">
 
-        <!-- 헤더 -->
-        <div class="px-5 pt-6 pb-4 flex items-center justify-between">
-          <div>
-            <h2 class="text-2xl font-black text-[#1A1A1A]">내 유언</h2>
-            <p class="text-sm text-gray-400">소중한 기록을 남겨보세요</p>
-          </div>
-          <button onclick="openWillModal()"
-            class="w-11 h-11 bg-[#F5A623] rounded-2xl flex items-center justify-center shadow-md hover:bg-[#E09318] transition-colors active:scale-95">
-            <iconify-icon icon="solar:add-circle-bold" width="24" class="text-white"></iconify-icon>
-          </button>
+      <div class="page-header">
+        <div>
+          <h2 class="text-3xl font-black text-[#1A1A1A]">내 유언</h2>
+          <p class="text-sm text-gray-400 mt-1">소중한 기록을 남겨보세요</p>
         </div>
+        <button onclick="openWillModal()" class="btn-primary">
+          <iconify-icon icon="solar:add-circle-bold" width="18"></iconify-icon>
+          유언 작성하기
+        </button>
+      </div>
 
-        <!-- 필터 탭 -->
-        <div class="px-5 mb-4">
-          <div class="flex gap-2 overflow-x-auto pb-1">
-            <button onclick="filterWills('all')" id="filterAll"
-              class="will-filter active px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all">
-              All
-            </button>
-            <button onclick="filterWills('text')" id="filterText"
-              class="will-filter px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all">
-              글
-            </button>
-            <button onclick="filterWills('image')" id="filterImage"
-              class="will-filter px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all">
-              사진
-            </button>
-            <button onclick="filterWills('video')" id="filterVideo"
-              class="will-filter px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all">
-              영상
-            </button>
-          </div>
+      <!-- 필터 + 정렬 -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex gap-2">
+          <button onclick="filterWills('all')" id="filterAll" class="will-filter active">All</button>
+          <button onclick="filterWills('text')" id="filterText" class="will-filter">글</button>
+          <button onclick="filterWills('image')" id="filterImage" class="will-filter">사진</button>
+          <button onclick="filterWills('video')" id="filterVideo" class="will-filter">영상</button>
         </div>
-
-        <!-- 정렬 -->
-        <div class="px-5 mb-4 flex items-center justify-between">
-          <span class="text-xs text-gray-400 font-medium" id="willCountLabel">총 0개</span>
-          <select class="text-xs font-bold text-gray-500 bg-transparent outline-none cursor-pointer"
+        <div class="flex items-center gap-4">
+          <span class="text-sm text-gray-400" id="willCountLabel">총 0개</span>
+          <select class="text-sm font-bold text-gray-500 bg-transparent outline-none cursor-pointer"
             id="willSortSelect" onchange="renderWills()">
             <option value="newest">최신순</option>
             <option value="oldest">오래된순</option>
           </select>
         </div>
+      </div>
 
-        <!-- 유언 리스트 -->
-        <div id="willList" class="px-5 space-y-2"></div>
+      <!-- 유언 카드 그리드 -->
+      <div id="willGrid" class="will-grid"></div>
 
-        <!-- 빈 상태 -->
-        <div id="willEmpty" class="hidden px-5 py-16 text-center">
+      <!-- 빈 상태 -->
+      <div id="willEmpty" class="hidden">
+        <div class="empty-state">
           <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <iconify-icon icon="solar:document-text-linear" width="36" class="text-gray-200"></iconify-icon>
           </div>
           <p class="text-base font-bold text-gray-400 mb-1">아직 기록된 유언이 없어요</p>
-          <p class="text-sm text-gray-300 mb-5">첫 번째 유언을 남겨보세요</p>
-          <button onclick="openWillModal()"
-            class="px-6 py-3 bg-[#F5A623] text-white text-sm font-bold rounded-2xl hover:bg-[#E09318] transition-colors">
+          <p class="text-sm text-gray-300 mb-6">첫 번째 유언을 남겨보세요</p>
+          <button onclick="openWillModal()" class="btn-primary">
+            <iconify-icon icon="solar:add-circle-bold" width="16"></iconify-icon>
             유언 작성하기
           </button>
         </div>
       </div>
+    </div>
 
 
-      <!-- ─── EXPERT TAB ─── -->
-      <div id="tabExpert" class="tab-content hidden">
+    <!-- ─── EXPERT TAB ─── -->
+    <div id="tabExpert" class="tab-content hidden">
 
-        <div class="px-5 pt-6 pb-4">
-          <h2 class="text-2xl font-black text-[#1A1A1A]">전문가</h2>
-          <p class="text-sm text-gray-400">분야별 전문가와 상담하세요</p>
-        </div>
-
-        <!-- 전문가 그리드 -->
-        <div class="px-5 grid grid-cols-2 gap-3 mb-6" id="expertGrid"></div>
-
-        <!-- 상담 내역 -->
-        <div class="px-5 mb-6">
-          <h3 class="text-base font-black text-[#1A1A1A] mb-3">상담 내역</h3>
-          <div class="border-2 border-dashed border-gray-200 rounded-3xl p-10 text-center">
-            <iconify-icon icon="solar:chat-round-line-linear" width="36" class="text-gray-200 mx-auto mb-2"></iconify-icon>
-            <p class="text-sm text-gray-400">아직 상담 내역이 없습니다</p>
-          </div>
+      <div class="page-header">
+        <div>
+          <h2 class="text-3xl font-black text-[#1A1A1A]">전문가</h2>
+          <p class="text-sm text-gray-400 mt-1">분야별 전문가와 상담하세요</p>
         </div>
       </div>
 
+      <!-- 전문가 3열 그리드 -->
+      <div id="expertGrid" class="expert-grid mb-8"></div>
 
-      <!-- ─── ARTICLE TAB ─── -->
-      <div id="tabArticle" class="tab-content hidden">
-
-        <div class="px-5 pt-6 pb-4">
-          <h2 class="text-2xl font-black text-[#1A1A1A]">아티클</h2>
-          <p class="text-sm text-gray-400">웰다잉 정보와 이야기</p>
+      <!-- 상담 내역 -->
+      <div class="card">
+        <h3 class="section-title mb-5">상담 내역</h3>
+        <div class="border-2 border-dashed border-gray-100 rounded-2xl py-14 text-center">
+          <iconify-icon icon="solar:chat-round-line-linear" width="36" class="text-gray-200 mx-auto mb-3"></iconify-icon>
+          <p class="text-sm text-gray-400">아직 상담 내역이 없습니다</p>
         </div>
+      </div>
+    </div>
 
+
+    <!-- ─── ARTICLE TAB ─── -->
+    <div id="tabArticle" class="tab-content hidden">
+
+      <div class="page-header">
+        <div>
+          <h2 class="text-3xl font-black text-[#1A1A1A]">아티클</h2>
+          <p class="text-sm text-gray-400 mt-1">웰다잉 정보와 이야기</p>
+        </div>
         <!-- 검색 -->
-        <div class="px-5 mb-4">
-          <div class="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3 border-2 border-transparent focus-within:border-[#F5A623] transition-all">
-            <iconify-icon icon="solar:magnifer-linear" width="18" class="text-gray-400 flex-shrink-0"></iconify-icon>
-            <input id="articleSearch" type="text" placeholder="아티클 검색..."
-              class="flex-1 bg-transparent text-sm font-medium outline-none placeholder-gray-300"
-              oninput="filterArticles()">
-          </div>
+        <div class="flex items-center gap-3 bg-gray-50 rounded-2xl px-4 py-3 border-2 border-transparent focus-within:border-[#F5A623] transition-all w-72">
+          <iconify-icon icon="solar:magnifer-linear" width="18" class="text-gray-400 flex-shrink-0"></iconify-icon>
+          <input id="articleSearch" type="text" placeholder="아티클 검색..."
+            class="flex-1 bg-transparent text-sm font-medium outline-none placeholder-gray-300"
+            oninput="filterArticles()">
         </div>
-
-        <!-- 태그 필터 -->
-        <div class="px-5 mb-4">
-          <div class="flex gap-2 overflow-x-auto pb-1">
-            <button onclick="setArticleTag('')" class="article-tag active px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">전체</button>
-            <button onclick="setArticleTag('유언장 작성')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">유언장 작성</button>
-            <button onclick="setArticleTag('장례 절차')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">장례 절차</button>
-            <button onclick="setArticleTag('상속 문제')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">상속 문제</button>
-            <button onclick="setArticleTag('웰다잉')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">웰다잉</button>
-            <button onclick="setArticleTag('재무계획')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">재무계획</button>
-            <button onclick="setArticleTag('심리치유')" class="article-tag px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all">심리치유</button>
-          </div>
-        </div>
-
-        <!-- 아티클 리스트 -->
-        <div id="articleList" class="px-5 space-y-3 pb-6"></div>
       </div>
 
-    </main>
-
-    <!-- 바텀 내비게이션 -->
-    <nav class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[520px] bg-white border-t border-gray-100 z-40">
-      <div class="grid grid-cols-4 px-2 py-2">
-        <button onclick="switchTab('home')" id="navHome" class="bottom-nav active flex flex-col items-center gap-1 py-2 rounded-xl transition-all">
-          <iconify-icon icon="solar:home-2-bold" width="22"></iconify-icon>
-          <span class="text-[10px] font-bold">홈</span>
-        </button>
-        <button onclick="switchTab('will')" id="navWill" class="bottom-nav flex flex-col items-center gap-1 py-2 rounded-xl transition-all text-gray-300">
-          <iconify-icon icon="solar:document-text-linear" width="22"></iconify-icon>
-          <span class="text-[10px] font-bold">내 유언</span>
-        </button>
-        <button onclick="switchTab('expert')" id="navExpert" class="bottom-nav flex flex-col items-center gap-1 py-2 rounded-xl transition-all text-gray-300">
-          <iconify-icon icon="solar:users-group-rounded-linear" width="22"></iconify-icon>
-          <span class="text-[10px] font-bold">전문가</span>
-        </button>
-        <button onclick="switchTab('article')" id="navArticle" class="bottom-nav flex flex-col items-center gap-1 py-2 rounded-xl transition-all text-gray-300">
-          <iconify-icon icon="solar:book-2-linear" width="22"></iconify-icon>
-          <span class="text-[10px] font-bold">아티클</span>
-        </button>
+      <!-- 태그 필터 -->
+      <div class="flex gap-2 flex-wrap mb-6">
+        <button onclick="setArticleTag('')" class="article-tag active">전체</button>
+        <button onclick="setArticleTag('유언장 작성')" class="article-tag">유언장 작성</button>
+        <button onclick="setArticleTag('장례 절차')" class="article-tag">장례 절차</button>
+        <button onclick="setArticleTag('상속 문제')" class="article-tag">상속 문제</button>
+        <button onclick="setArticleTag('웰다잉')" class="article-tag">웰다잉</button>
+        <button onclick="setArticleTag('재무계획')" class="article-tag">재무계획</button>
+        <button onclick="setArticleTag('심리치유')" class="article-tag">심리치유</button>
       </div>
-    </nav>
-  </div>
 
+      <!-- 아티클 2열 그리드 -->
+      <div id="articleList" class="article-grid"></div>
+    </div>
+
+  </main>
 </div>
 
 
 <!-- ======================================================
-     WILL 작성 모달 (바텀시트)
+     WILL 작성 모달 (센터 다이얼로그)
 ====================================================== -->
-<div id="willModal" class="fixed inset-0 z-50 hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWillModal()"></div>
-  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[520px] bg-white rounded-t-3xl p-6 slide-up overflow-y-auto max-h-[92vh]">
+<div id="willModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeWillModal()"></div>
+  <div class="modal-dialog modal-pop">
 
-    <!-- 핸들 -->
-    <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5"></div>
-
-    <div class="flex items-center justify-between mb-5">
+    <div class="flex items-center justify-between mb-6">
       <h3 class="text-xl font-black text-[#1A1A1A]">유언 작성</h3>
-      <button onclick="closeWillModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+      <button onclick="closeWillModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
         <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
       </button>
     </div>
 
     <!-- 유형 선택 -->
-    <div class="flex gap-2 mb-5">
-      <button onclick="setWillType('text')" id="willTypeText" class="will-type active flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">
-        ✍️ 글
-      </button>
-      <button onclick="setWillType('image')" id="willTypeImage" class="will-type flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">
-        📸 사진
-      </button>
-      <button onclick="setWillType('video')" id="willTypeVideo" class="will-type flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">
-        🎬 영상
-      </button>
+    <div class="flex gap-2 mb-6">
+      <button onclick="setWillType('text')" id="willTypeText" class="will-type active flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">✍️ 글</button>
+      <button onclick="setWillType('image')" id="willTypeImage" class="will-type flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">📸 사진</button>
+      <button onclick="setWillType('video')" id="willTypeVideo" class="will-type flex-1 py-2.5 rounded-xl text-sm font-bold transition-all">🎬 영상</button>
     </div>
 
     <div class="space-y-4">
-      <div>
-        <label class="form-label">제목 <span class="text-[#F5A623]">*</span></label>
-        <input id="willTitle" type="text" placeholder="제목을 입력해주세요" class="form-input">
-      </div>
-      <div>
-        <label class="form-label">받는 분</label>
-        <input id="willRecipient" type="text" placeholder="예: 사랑하는 가족에게" class="form-input">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="form-label">제목 <span class="text-[#F5A623]">*</span></label>
+          <input id="willTitle" type="text" placeholder="제목을 입력해주세요" class="form-input">
+        </div>
+        <div>
+          <label class="form-label">받는 분</label>
+          <input id="willRecipient" type="text" placeholder="예: 사랑하는 가족에게" class="form-input">
+        </div>
       </div>
 
-      <!-- 글 영역 -->
+      <!-- 글 -->
       <div id="willTextArea">
         <label class="form-label">내용 <span class="text-[#F5A623]">*</span></label>
-        <textarea id="willContent" rows="6" placeholder="소중한 마음을 담아 작성해주세요..."
+        <textarea id="willContent" rows="7" placeholder="소중한 마음을 담아 작성해주세요..."
           class="form-input resize-none"></textarea>
       </div>
 
-      <!-- 사진 업로드 -->
+      <!-- 사진 -->
       <div id="willImageArea" class="hidden">
         <label class="form-label">사진 첨부 <span class="text-[#F5A623]">*</span></label>
         <label for="willImageInput" class="block cursor-pointer">
@@ -427,7 +481,7 @@
         <input id="willImageInput" type="file" accept="image/*" class="hidden" onchange="previewImage(event)">
       </div>
 
-      <!-- 영상 업로드 -->
+      <!-- 영상 -->
       <div id="willVideoArea" class="hidden">
         <label class="form-label">영상 첨부 <span class="text-[#F5A623]">*</span></label>
         <label for="willVideoInput" class="block cursor-pointer">
@@ -442,8 +496,7 @@
 
       <p id="willError" class="text-xs text-red-400 hidden"></p>
 
-      <button onclick="saveWill()" id="saveWillBtn"
-        class="w-full py-4 rounded-2xl bg-[#F5A623] text-white text-base font-bold hover:bg-[#E09318] transition-colors active:scale-95">
+      <button onclick="saveWill()" id="saveWillBtn" class="btn-primary w-full py-4 text-base justify-center">
         저장하기
       </button>
     </div>
@@ -452,24 +505,26 @@
 
 
 <!-- ======================================================
-     WILL 상세 모달 (바텀시트)
+     WILL 상세 모달
 ====================================================== -->
-<div id="willDetailModal" class="fixed inset-0 z-50 hidden">
-  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeWillDetail()"></div>
-  <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[520px] bg-white rounded-t-3xl p-6 slide-up overflow-y-auto max-h-[85vh]">
-    <div class="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5"></div>
-    <div class="flex items-start justify-between mb-4">
-      <div class="flex-1 mr-3">
-        <div id="detailType" class="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-1"></div>
-        <h3 id="detailTitle" class="text-xl font-black text-[#1A1A1A] leading-snug"></h3>
-        <p id="detailRecipient" class="text-sm text-gray-400 mt-1"></p>
+<div id="willDetailModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeWillDetail()"></div>
+  <div class="modal-dialog modal-pop">
+    <div class="flex items-start justify-between mb-5">
+      <div class="flex-1 mr-4">
+        <div id="detailType" class="text-xs font-bold text-[#F5A623] uppercase tracking-wider mb-1.5"></div>
+        <h3 id="detailTitle" class="text-2xl font-black text-[#1A1A1A] leading-snug"></h3>
+        <p id="detailRecipient" class="text-sm text-gray-400 mt-1.5"></p>
       </div>
-      <button onclick="closeWillDetail()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+      <button onclick="closeWillDetail()" class="w-9 h-9 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0 hover:bg-gray-200 transition-colors">
         <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
       </button>
     </div>
-    <div id="detailContent" class="text-sm text-gray-600 leading-relaxed mb-4"></div>
-    <div id="detailDate" class="text-xs text-gray-300 font-medium mb-5"></div>
+
+    <div class="h-px bg-gray-100 mb-5"></div>
+    <div id="detailContent" class="text-sm text-gray-600 leading-relaxed mb-5 min-h-[80px]"></div>
+    <p id="detailDate" class="text-xs text-gray-300 font-medium mb-6"></p>
+
     <button onclick="deleteWillConfirm()"
       class="w-full py-3.5 rounded-2xl border-2 border-red-100 text-red-400 text-sm font-bold hover:bg-red-50 transition-colors">
       이 유언 삭제하기
