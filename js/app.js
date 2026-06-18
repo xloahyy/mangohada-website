@@ -196,6 +196,7 @@ async function enterApp(user) {
 
   // 데이터 로드 및 렌더
   await loadWills();
+  await loadHappiness();
   renderExperts();
   renderArticles();
   renderHomeArticles();
@@ -311,16 +312,148 @@ const TAB_ICONS = {
 };
 
 function switchTab(tab) {
-  ['home', 'will', 'expert', 'article'].forEach(t => {
+  const allTabs = ['home', 'will', 'expert', 'article', 'happiness'];
+  allTabs.forEach(t => {
     const content = document.getElementById(`tab${capitalize(t)}`);
-    const nav = document.getElementById(`nav${capitalize(t)}`);
-    const icon = nav.querySelector('iconify-icon');
-
-    const isActive = t === tab;
-    content.classList.toggle('hidden', !isActive);
-    nav.classList.toggle('active', isActive);
-    if (icon) icon.setAttribute('icon', isActive ? TAB_ICONS[t].active : TAB_ICONS[t].inactive);
+    if (content) content.classList.toggle('hidden', t !== tab);
   });
+
+  ['home', 'will', 'expert', 'article'].forEach(t => {
+    const nav = document.getElementById(`nav${capitalize(t)}`);
+    if (!nav) return;
+    const icon = nav.querySelector('iconify-icon');
+    const isActive = t === tab;
+    nav.classList.toggle('active', isActive);
+    if (icon && TAB_ICONS[t]) icon.setAttribute('icon', isActive ? TAB_ICONS[t].active : TAB_ICONS[t].inactive);
+  });
+}
+
+function openHappiness() {
+  switchTab('happiness');
+}
+
+/* ========================
+   행복저금
+======================== */
+let allHappiness = [];
+
+async function loadHappiness() {
+  if (!currentUser) return;
+  const { data } = await sb
+    .from('happiness')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  allHappiness = data || [];
+  document.getElementById('happinessCount').textContent = allHappiness.length;
+  renderHappiness();
+}
+
+function renderHappiness() {
+  const listEl = document.getElementById('happinessList');
+  const emptyEl = document.getElementById('happinessEmpty');
+  document.getElementById('happinessTotal').textContent = allHappiness.length;
+
+  if (allHappiness.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+  listEl.innerHTML = allHappiness.map(h => `
+    <div class="card flex items-start gap-4 group">
+      <div class="w-10 h-10 bg-[#FFF8EC] rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5">
+        <iconify-icon icon="solar:heart-shine-bold" width="18" class="text-[#F5A623]"></iconify-icon>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-[#1A1A1A] font-medium leading-relaxed">${escapeHtml(h.content)}</p>
+        <p class="text-xs text-gray-300 mt-2">${formatDate(h.created_at)}</p>
+      </div>
+      <button onclick="deleteHappiness('${h.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity w-7 h-7 bg-red-50 rounded-lg flex items-center justify-center flex-shrink-0">
+        <iconify-icon icon="solar:trash-bin-trash-linear" width="14" class="text-red-400"></iconify-icon>
+      </button>
+    </div>
+  `).join('');
+}
+
+function openHappinessModal() {
+  document.getElementById('happinessContent').value = '';
+  document.getElementById('happinessCharCount').textContent = '0';
+  document.getElementById('happinessError').classList.add('hidden');
+  document.getElementById('happinessModal').classList.remove('hidden');
+}
+
+function closeHappinessModal() {
+  document.getElementById('happinessModal').classList.add('hidden');
+}
+
+function updateHappinessCount() {
+  const len = document.getElementById('happinessContent').value.length;
+  document.getElementById('happinessCharCount').textContent = len;
+}
+
+async function saveHappiness() {
+  const content = document.getElementById('happinessContent').value.trim();
+  const errEl = document.getElementById('happinessError');
+  if (!content) {
+    errEl.textContent = '내용을 입력해주세요';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  const btn = document.getElementById('saveHappinessBtn');
+  setLoading(btn, true, '저금 중...');
+  const { error } = await sb.from('happiness').insert([{ user_id: currentUser.id, content }]);
+  setLoading(btn, false, '저금하기');
+  if (error) {
+    errEl.textContent = '저장에 실패했습니다';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  closeHappinessModal();
+  await loadHappiness();
+}
+
+async function deleteHappiness(id) {
+  if (!confirm('삭제하시겠어요?')) return;
+  await sb.from('happiness').delete().eq('id', id).eq('user_id', currentUser.id);
+  await loadHappiness();
+}
+
+function openRandomModal() {
+  document.getElementById('randomResult').innerHTML = '<p class="text-gray-300 text-sm">버튼을 눌러 다른 유저의 행복을 확인해보세요</p>';
+  document.getElementById('randomModal').classList.remove('hidden');
+}
+
+function closeRandomModal() {
+  document.getElementById('randomModal').classList.add('hidden');
+}
+
+async function drawRandom() {
+  const btn = document.getElementById('drawBtn');
+  setLoading(btn, true, '뽑는 중...');
+
+  const { data } = await sb
+    .from('happiness')
+    .select('content, created_at')
+    .neq('user_id', currentUser.id)
+    .limit(100);
+
+  setLoading(btn, false, '랜덤 뽑기');
+
+  if (!data || data.length === 0) {
+    document.getElementById('randomResult').innerHTML = '<p class="text-gray-400 text-sm">아직 다른 유저의 행복저금이 없어요 🌱</p>';
+    return;
+  }
+
+  const item = data[Math.floor(Math.random() * data.length)];
+  document.getElementById('randomResult').innerHTML = `
+    <div class="bg-[#FFF8EC] rounded-2xl p-6 text-left w-full">
+      <iconify-icon icon="solar:heart-shine-bold" width="24" class="text-[#F5A623] mb-3 block"></iconify-icon>
+      <p class="text-base text-[#1A1A1A] font-medium leading-relaxed">${escapeHtml(item.content)}</p>
+      <p class="text-xs text-gray-300 mt-3">${formatDate(item.created_at)}</p>
+    </div>
+  `;
 }
 
 /* ========================
@@ -712,6 +845,15 @@ function esc(str) {
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
 }
 
 function pad(n) {
