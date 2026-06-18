@@ -213,28 +213,54 @@
 </div>
 
 <!-- ── 아티클 모달 ── -->
-<div id="articleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-  <div class="bg-white rounded-3xl w-full max-w-xl mx-4 shadow-2xl overflow-hidden">
-    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+<div id="articleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+  <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl flex flex-col" style="max-height:90vh;">
+    <div class="flex items-center justify-between px-8 py-5 border-b border-gray-100 flex-shrink-0">
       <h3 id="modalTitle" class="text-lg font-black text-[#1A1A1A]">아티클 등록</h3>
       <button onclick="closeArticleModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-all">
         <iconify-icon icon="solar:close-circle-linear" width="16"></iconify-icon>
       </button>
     </div>
-    <div class="px-8 py-6 space-y-5">
+    <div class="px-8 py-6 space-y-5 overflow-y-auto flex-1">
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">카테고리</label>
+          <select id="articleCategoryInput"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all">
+            <option>유언장 작성</option>
+            <option>장례 절차</option>
+            <option>상속 문제</option>
+            <option>웰다잉</option>
+            <option>재무계획</option>
+            <option>심리치유</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">제목</label>
+          <input id="articleTitleInput" type="text" placeholder="아티클 제목"
+            class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all">
+        </div>
+      </div>
       <div>
-        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">제목</label>
-        <input id="articleTitleInput" type="text" placeholder="아티클 제목을 입력하세요"
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">미리보기 설명 <span class="text-gray-300 normal-case font-normal">(카드에 표시되는 짧은 설명)</span></label>
+        <input id="articleDescInput" type="text" placeholder="한두 줄의 짧은 설명을 입력하세요"
           class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all">
       </div>
       <div>
-        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">내용</label>
-        <textarea id="articleContentInput" rows="8" placeholder="아티클 내용을 입력하세요"
-          class="w-full px-4 py-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium outline-none focus:border-[#F5A623] focus:bg-white transition-all resize-none"></textarea>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">본문 블록</label>
+        <div id="blockEditor" class="space-y-3 mb-3"></div>
+        <div class="flex gap-2">
+          <button onclick="addTextBlock()" class="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-gray-100 text-xs font-bold text-gray-500 hover:border-[#F5A623] hover:text-[#F5A623] transition-all">
+            <iconify-icon icon="solar:text-field-linear" width="14"></iconify-icon> 텍스트 추가
+          </button>
+          <button onclick="addImageBlock()" class="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-gray-100 text-xs font-bold text-gray-500 hover:border-[#F5A623] hover:text-[#F5A623] transition-all">
+            <iconify-icon icon="solar:gallery-add-linear" width="14"></iconify-icon> 이미지 추가
+          </button>
+        </div>
       </div>
       <p id="articleErr" class="text-xs text-red-400 hidden"></p>
     </div>
-    <div class="px-8 pb-8 flex gap-3">
+    <div class="px-8 py-5 flex gap-3 flex-shrink-0 border-t border-gray-100">
       <button onclick="closeArticleModal()" class="flex-1 py-3 rounded-xl border-2 border-gray-100 text-sm font-bold text-gray-400 hover:bg-gray-50 transition-all">취소</button>
       <button onclick="saveArticle()" id="articleSaveBtn" class="flex-1 py-3 rounded-xl bg-[#F5A623] text-white text-sm font-bold hover:bg-[#E09318] transition-all">저장하기</button>
     </div>

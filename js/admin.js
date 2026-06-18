@@ -259,6 +259,7 @@ async function loadAdminHappiness() {
 
 /* ── 아티클 관리 ── */
 let editingArticleId = null;
+let articleBlocks = [];
 
 async function loadArticles() {
   const { data } = await sb
@@ -278,8 +279,10 @@ async function loadArticles() {
     <table class="w-full text-sm">
       <thead>
         <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">카테고리</th>
           <th class="text-left px-6 py-3">제목</th>
-          <th class="text-left px-6 py-3">내용 미리보기</th>
+          <th class="text-left px-6 py-3">미리보기 설명</th>
+          <th class="text-left px-6 py-3">블록</th>
           <th class="text-left px-6 py-3">등록일</th>
           <th class="text-left px-6 py-3">관리</th>
         </tr>
@@ -287,8 +290,12 @@ async function loadArticles() {
       <tbody>
         ${list.map(a => `
           <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 font-bold text-[#1A1A1A] max-w-[180px]"><p class="truncate">${esc(a.title)}</p></td>
-            <td class="px-6 py-4 text-gray-500 max-w-xs"><p class="truncate">${esc(a.content)}</p></td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-[#FFF8EC] text-[#F5A623]">${esc(a.category || '미분류')}</span>
+            </td>
+            <td class="px-6 py-4 font-bold text-[#1A1A1A] max-w-[160px]"><p class="truncate">${esc(a.title)}</p></td>
+            <td class="px-6 py-4 text-gray-500 max-w-xs"><p class="truncate">${esc(a.description || '')}</p></td>
+            <td class="px-6 py-4 text-gray-400">${(a.blocks || []).length}개</td>
             <td class="px-6 py-4 text-gray-400 whitespace-nowrap">${fmtDate(a.created_at)}</td>
             <td class="px-6 py-4">
               <div class="flex gap-2">
@@ -307,34 +314,134 @@ async function loadArticles() {
 
 function openArticleModal(article = null) {
   editingArticleId = article ? article.id : null;
-  document.getElementById('modalTitle').textContent = article ? '아티클 수정' : '아티클 등록';
-  document.getElementById('articleTitleInput').value   = article ? article.title   : '';
-  document.getElementById('articleContentInput').value = article ? article.content : '';
+  articleBlocks = article
+    ? JSON.parse(JSON.stringify(article.blocks || [])).map(b => ({
+        ...b,
+        previewUrl: b.type === 'image' ? b.url : undefined,
+        file: null,
+      }))
+    : [];
+
+  document.getElementById('modalTitle').textContent             = article ? '아티클 수정' : '아티클 등록';
+  document.getElementById('articleTitleInput').value            = article ? article.title              : '';
+  document.getElementById('articleDescInput').value             = article ? (article.description || '') : '';
+  document.getElementById('articleCategoryInput').value         = article ? (article.category  || '웰다잉') : '웰다잉';
   document.getElementById('articleErr').classList.add('hidden');
+  renderBlockEditor();
   document.getElementById('articleModal').classList.remove('hidden');
 }
 
 function closeArticleModal() {
   document.getElementById('articleModal').classList.add('hidden');
   editingArticleId = null;
+  articleBlocks = [];
+}
+
+function addTextBlock() {
+  articleBlocks.push({ type: 'text', value: '' });
+  renderBlockEditor();
+}
+
+function addImageBlock() {
+  articleBlocks.push({ type: 'image', url: '', previewUrl: '', file: null });
+  renderBlockEditor();
+}
+
+function removeBlock(index) {
+  articleBlocks.splice(index, 1);
+  renderBlockEditor();
+}
+
+function selectBlockImage(index, input) {
+  const file = input.files[0];
+  if (!file) return;
+  articleBlocks[index].file = file;
+  articleBlocks[index].previewUrl = URL.createObjectURL(file);
+  renderBlockEditor();
+}
+
+function renderBlockEditor() {
+  const el = document.getElementById('blockEditor');
+  if (!articleBlocks.length) {
+    el.innerHTML = '<p class="text-sm text-gray-300 py-4 text-center border-2 border-dashed border-gray-100 rounded-xl">블록을 추가해주세요</p>';
+    return;
+  }
+  el.innerHTML = articleBlocks.map((block, i) => {
+    if (block.type === 'text') {
+      return `
+        <div class="border-2 border-gray-100 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-100">
+            <span class="text-xs font-bold text-gray-400">텍스트 블록</span>
+            <button onclick="removeBlock(${i})" class="text-red-300 hover:text-red-400 text-lg font-bold leading-none px-1">×</button>
+          </div>
+          <textarea rows="3"
+            class="w-full px-3 py-2.5 text-sm outline-none resize-y text-gray-700 bg-white"
+            oninput="articleBlocks[${i}].value = this.value"
+            placeholder="내용을 입력하세요...">${esc(block.value)}</textarea>
+        </div>`;
+    } else {
+      return `
+        <div class="border-2 border-gray-100 rounded-xl overflow-hidden">
+          <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-100">
+            <span class="text-xs font-bold text-gray-400">이미지 블록</span>
+            <button onclick="removeBlock(${i})" class="text-red-300 hover:text-red-400 text-lg font-bold leading-none px-1">×</button>
+          </div>
+          <div class="p-3">
+            ${block.previewUrl
+              ? `<img src="${block.previewUrl}" class="w-full max-h-48 object-cover rounded-xl mb-2">
+                 <label class="block text-center text-xs text-gray-400 cursor-pointer hover:text-[#F5A623] transition-all">
+                   ↑ 클릭하여 이미지 변경
+                   <input type="file" accept="image/*" class="hidden" onchange="selectBlockImage(${i}, this)">
+                 </label>`
+              : `<label class="flex flex-col items-center justify-center h-28 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 cursor-pointer hover:bg-gray-100 transition-all">
+                   <iconify-icon icon="solar:gallery-add-linear" width="24" class="text-gray-300 mb-1.5"></iconify-icon>
+                   <span class="text-xs text-gray-400 font-medium">클릭하여 이미지 선택</span>
+                   <input type="file" accept="image/*" class="hidden" onchange="selectBlockImage(${i}, this)">
+                 </label>`
+            }
+          </div>
+        </div>`;
+    }
+  }).join('');
 }
 
 async function saveArticle() {
-  const title   = document.getElementById('articleTitleInput').value.trim();
-  const content = document.getElementById('articleContentInput').value.trim();
-  const err     = document.getElementById('articleErr');
-  const btn     = document.getElementById('articleSaveBtn');
+  const title       = document.getElementById('articleTitleInput').value.trim();
+  const category    = document.getElementById('articleCategoryInput').value;
+  const description = document.getElementById('articleDescInput').value.trim();
+  const err         = document.getElementById('articleErr');
+  const btn         = document.getElementById('articleSaveBtn');
 
-  if (!title)   { err.textContent = '제목을 입력해주세요'; err.classList.remove('hidden'); return; }
-  if (!content) { err.textContent = '내용을 입력해주세요'; err.classList.remove('hidden'); return; }
+  if (!title) { err.textContent = '제목을 입력해주세요'; err.classList.remove('hidden'); return; }
 
   btn.textContent = '저장 중...'; btn.disabled = true;
+  err.classList.add('hidden');
+
+  const blocks = [];
+  for (const block of articleBlocks) {
+    if (block.type === 'text') {
+      blocks.push({ type: 'text', value: block.value });
+    } else if (block.type === 'image') {
+      if (block.file) {
+        const path = `${Date.now()}_${block.file.name.replace(/\s+/g, '_')}`;
+        const { error: upErr } = await sb.storage.from('articles').upload(path, block.file);
+        if (!upErr) {
+          const { data: { publicUrl } } = sb.storage.from('articles').getPublicUrl(path);
+          blocks.push({ type: 'image', url: publicUrl });
+        }
+      } else if (block.url) {
+        blocks.push({ type: 'image', url: block.url });
+      }
+    }
+  }
 
   let error;
   if (editingArticleId) {
-    ({ error } = await sb.from('articles').update({ title, content, updated_at: new Date().toISOString() }).eq('id', editingArticleId));
+    ({ error } = await sb.from('articles').update({
+      title, category, description, blocks, updated_at: new Date().toISOString()
+    }).eq('id', editingArticleId));
   } else {
-    ({ error } = await sb.from('articles').insert({ title, content }));
+    ({ error } = await sb.from('articles').insert({ title, category, description, blocks }));
   }
 
   btn.textContent = '저장하기'; btn.disabled = false;

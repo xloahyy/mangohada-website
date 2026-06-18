@@ -43,6 +43,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 ======================== */
 let currentUser = null;
 let allWills = [];
+let allArticles = [];
 let currentWillFilter = 'all';
 let currentWillId = null;
 let currentWillType = 'text';
@@ -102,64 +103,14 @@ const EXPERTS = [
   },
 ];
 
-const ARTICLES = [
-  {
-    id: 1,
-    title: '유언장, 어떻게 써야 법적 효력이 있을까?',
-    preview: '자필 유언서부터 공증 유언서까지, 종류별 요건과 주의사항을 알기 쉽게 정리했습니다.',
-    tag: '유언장 작성',
-    bg: 'bg-blue-50',
-    emoji: '⚖️',
-  },
-  {
-    id: 2,
-    title: '좋은 죽음이란 무엇인가 — 웰다잉의 의미',
-    preview: '두려움 없이 죽음을 맞이하는 것, 웰다잉 운동이 왜 세계적으로 확산되고 있는지 알아봅니다.',
-    tag: '웰다잉',
-    bg: 'bg-yellow-50',
-    emoji: '🌅',
-  },
-  {
-    id: 3,
-    title: '장례 절차, 미리 알아두면 덜 힘들어요',
-    preview: '임종부터 발인까지 각 단계를 이해하고, 사전에 준비할 수 있는 것들을 소개합니다.',
-    tag: '장례 절차',
-    bg: 'bg-green-50',
-    emoji: '🌸',
-  },
-  {
-    id: 4,
-    title: '상속 분쟁을 예방하는 3가지 방법',
-    preview: '유언장 작성, 신탁 설정, 생전 증여 — 가족 간의 분쟁을 줄이는 실질적인 방법들입니다.',
-    tag: '상속 문제',
-    bg: 'bg-red-50',
-    emoji: '🏠',
-  },
-  {
-    id: 5,
-    title: '노후 재무계획: 지금 시작해야 하는 이유',
-    preview: '은퇴 이후의 삶을 재정적으로 안정적으로 만들기 위한 첫 번째 단계를 안내합니다.',
-    tag: '재무계획',
-    bg: 'bg-purple-50',
-    emoji: '💰',
-  },
-  {
-    id: 6,
-    title: '죽음 불안을 다스리는 심리 치유법',
-    preview: '존재에 대한 불안을 직면하고 삶의 의미를 재발견하는 심리 치료적 접근을 소개합니다.',
-    tag: '심리치유',
-    bg: 'bg-pink-50',
-    emoji: '🧠',
-  },
-  {
-    id: 7,
-    title: '디지털 유언: SNS와 계정은 어떻게 할까?',
-    preview: 'SNS, 이메일, 구독 서비스 등 디지털 자산의 사후 처리 방법을 알아봅니다.',
-    tag: '유언장 작성',
-    bg: 'bg-indigo-50',
-    emoji: '💻',
-  },
-];
+const CATEGORY_STYLE = {
+  '유언장 작성': { bg: 'bg-blue-50',   emoji: '⚖️' },
+  '장례 절차':   { bg: 'bg-green-50',  emoji: '🌸' },
+  '상속 문제':   { bg: 'bg-red-50',    emoji: '🏠' },
+  '웰다잉':      { bg: 'bg-yellow-50', emoji: '🌅' },
+  '재무계획':    { bg: 'bg-purple-50', emoji: '💰' },
+  '심리치유':    { bg: 'bg-pink-50',   emoji: '🧠' },
+};
 
 /* ========================
    인증 초기화
@@ -203,9 +154,8 @@ async function enterApp(user) {
   // 데이터 로드 및 렌더
   await loadWills();
   await loadHappiness();
+  await loadArticles();
   renderExperts();
-  renderArticles();
-  renderHomeArticles();
   switchTab('home');
 }
 
@@ -826,24 +776,42 @@ function renderExperts() {
 }
 
 /* ========================
-   아티클 렌더링
+   아티클 로드 및 렌더링
 ======================== */
+async function loadArticles() {
+  const { data } = await sb
+    .from('articles')
+    .select('*')
+    .order('created_at', { ascending: false });
+  allArticles = data || [];
+  renderArticles();
+  renderHomeArticles();
+}
+
 function renderHomeArticles() {
-  document.getElementById('homeArticles').innerHTML = ARTICLES.slice(0, 2).map(a => `
-    <button onclick="switchTab('article')"
-      class="w-full flex items-center gap-3 p-3 rounded-2xl border-2 border-gray-50
-             hover:border-[#F5A623]/30 hover:bg-[#FFFBF0] transition-all text-left">
-      <div class="w-12 h-12 ${a.bg} rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-        ${a.emoji}
-      </div>
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-bold text-[#1A1A1A] leading-tight truncate">${esc(a.title)}</p>
-        <span class="inline-block text-[10px] font-bold text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 mt-1">
-          ${a.tag}
-        </span>
-      </div>
-    </button>
-  `).join('');
+  const list = allArticles.slice(0, 2);
+  const el = document.getElementById('homeArticles');
+  if (!list.length) {
+    el.innerHTML = '<p class="text-xs text-gray-300 text-center py-2">등록된 아티클이 없습니다</p>';
+    return;
+  }
+  el.innerHTML = list.map(a => {
+    const style = CATEGORY_STYLE[a.category] || { bg: 'bg-gray-50', emoji: '📄' };
+    return `
+      <button onclick="openArticleDetail('${a.id}')"
+        class="w-full flex items-center gap-3 p-3 rounded-2xl border-2 border-gray-50
+               hover:border-[#F5A623]/30 hover:bg-[#FFFBF0] transition-all text-left">
+        <div class="w-12 h-12 ${style.bg} rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+          ${style.emoji}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-[#1A1A1A] leading-tight truncate">${esc(a.title)}</p>
+          <span class="inline-block text-[10px] font-bold text-gray-400 bg-gray-100 rounded-full px-2 py-0.5 mt-1">
+            ${esc(a.category || '')}
+          </span>
+        </div>
+      </button>`;
+  }).join('');
 }
 
 function renderArticles() {
@@ -862,11 +830,11 @@ function setArticleTag(tag) {
 function filterArticles() {
   const query = (document.getElementById('articleSearch').value || '').toLowerCase();
 
-  const filtered = ARTICLES.filter(a => {
-    const matchTag = !currentArticleTag || a.tag === currentArticleTag;
+  const filtered = allArticles.filter(a => {
+    const matchTag = !currentArticleTag || a.category === currentArticleTag;
     const matchSearch = !query ||
       a.title.toLowerCase().includes(query) ||
-      a.preview.toLowerCase().includes(query);
+      (a.description || '').toLowerCase().includes(query);
     return matchTag && matchSearch;
   });
 
@@ -880,21 +848,57 @@ function filterArticles() {
     return;
   }
 
-  el.innerHTML = filtered.map(a => `
-    <div class="flex gap-4 p-5 bg-white rounded-2xl border hover:border-[#F5A623]/40
-                hover:shadow-md transition-all cursor-pointer" style="border: 1.5px solid #F3F4F6;">
-      <div class="flex-1 min-w-0">
-        <span class="inline-block text-[11px] font-bold text-[#F5A623] bg-[#FFF8E6] rounded-full px-3 py-1 mb-3">
-          ${a.tag}
-        </span>
-        <h4 class="text-base font-bold text-[#1A1A1A] leading-snug mb-2">${esc(a.title)}</h4>
-        <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">${esc(a.preview)}</p>
-      </div>
-      <div class="w-20 h-20 ${a.bg} rounded-2xl flex items-center justify-center text-4xl flex-shrink-0">
-        ${a.emoji}
-      </div>
-    </div>
-  `).join('');
+  el.innerHTML = filtered.map(a => {
+    const style = CATEGORY_STYLE[a.category] || { bg: 'bg-gray-50', emoji: '📄' };
+    return `
+      <div onclick="openArticleDetail('${a.id}')"
+        class="flex gap-4 p-5 bg-white rounded-2xl border hover:border-[#F5A623]/40
+               hover:shadow-md transition-all cursor-pointer" style="border: 1.5px solid #F3F4F6;">
+        <div class="flex-1 min-w-0">
+          <span class="inline-block text-[11px] font-bold text-[#F5A623] bg-[#FFF8E6] rounded-full px-3 py-1 mb-3">
+            ${esc(a.category || '')}
+          </span>
+          <h4 class="text-base font-bold text-[#1A1A1A] leading-snug mb-2">${esc(a.title)}</h4>
+          <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">${esc(a.description || '')}</p>
+        </div>
+        <div class="w-20 h-20 ${style.bg} rounded-2xl flex items-center justify-center text-4xl flex-shrink-0">
+          ${style.emoji}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ========================
+   아티클 상세
+======================== */
+function openArticleDetail(id) {
+  const article = allArticles.find(a => a.id === id);
+  if (!article) return;
+
+  document.getElementById('articleDetailCategory').textContent = article.category || '';
+  document.getElementById('articleDetailTitle').textContent    = article.title;
+  document.getElementById('articleDetailDate').textContent     = formatDate(article.created_at);
+  document.getElementById('articleDetailBody').innerHTML       = renderArticleBlocks(article.blocks || []);
+
+  document.getElementById('articleDetailModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeArticleDetail() {
+  document.getElementById('articleDetailModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function renderArticleBlocks(blocks) {
+  if (!blocks.length) return '<p class="text-gray-400 text-sm">내용이 없습니다</p>';
+  return blocks.map(b => {
+    if (b.type === 'text') {
+      return `<p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap mb-5">${esc(b.value)}</p>`;
+    } else if (b.type === 'image') {
+      return `<img src="${b.url}" class="w-full rounded-2xl mb-5 object-cover">`;
+    }
+    return '';
+  }).join('');
 }
 
 /* ========================
