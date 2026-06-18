@@ -11,14 +11,14 @@ let currentFilter = 'all';
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
-    const ok = await checkAdmin(session.user.id);
+    const ok = await checkAdmin();
     if (ok) enterAdmin();
   }
 })();
 
-async function checkAdmin(uid) {
-  const { data } = await sb.from('profiles').select('is_admin').eq('id', uid).single();
-  return data?.is_admin === true;
+async function checkAdmin() {
+  const { data } = await sb.rpc('check_is_admin');
+  return data === true;
 }
 
 /* ── 로그인 ── */
@@ -38,7 +38,7 @@ async function adminLogin() {
 
   if (error) { showErr(err, '아이디 또는 비밀번호가 올바르지 않습니다'); return; }
 
-  const ok = await checkAdmin(data.user.id);
+  const ok = await checkAdmin();
   if (!ok) { await sb.auth.signOut(); showErr(err, '어드민 권한이 없습니다'); return; }
 
   enterAdmin();
