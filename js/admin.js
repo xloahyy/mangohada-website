@@ -187,8 +187,8 @@ function statusLabel(s) {
 async function loadAdminWills() {
   const { data } = await sb
     .from('wills')
-    .select('id, content, created_at, updated_at, user_id')
-    .order('updated_at', { ascending: false });
+    .select('id, title, content, type, created_at, user_id')
+    .order('created_at', { ascending: false });
 
   const list = data || [];
   const el = document.getElementById('willTable');
@@ -202,17 +202,19 @@ async function loadAdminWills() {
     <table class="w-full text-sm">
       <thead>
         <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">제목</th>
           <th class="text-left px-6 py-3">내용 미리보기</th>
-          <th class="text-left px-6 py-3">글자 수</th>
-          <th class="text-left px-6 py-3">최종 수정일</th>
+          <th class="text-left px-6 py-3">유형</th>
+          <th class="text-left px-6 py-3">작성일</th>
         </tr>
       </thead>
       <tbody>
         ${list.map(w => `
           <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 text-gray-600 max-w-sm"><p class="truncate">${esc(w.content || '')}</p></td>
-            <td class="px-6 py-4 text-gray-400">${(w.content || '').length}자</td>
-            <td class="px-6 py-4 text-gray-400">${fmtDate(w.updated_at || w.created_at)}</td>
+            <td class="px-6 py-4 font-bold text-[#1A1A1A] max-w-[180px]"><p class="truncate">${esc(w.title || '')}</p></td>
+            <td class="px-6 py-4 text-gray-600 max-w-xs"><p class="truncate">${esc(w.content || '')}</p></td>
+            <td class="px-6 py-4 text-gray-400">${w.type || 'text'}</td>
+            <td class="px-6 py-4 text-gray-400">${fmtDate(w.created_at)}</td>
           </tr>
         `).join('')}
       </tbody>
