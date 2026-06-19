@@ -630,7 +630,6 @@ async function deleteWillConfirm() {
   const { error } = await sb.from('wills').delete().eq('id', currentWillId);
   if (!error) {
     allWills = allWills.filter(w => w.id !== currentWillId);
-    document.getElementById('willCount').textContent = allWills.length;
     renderWills();
     closeWillDetail();
   }
@@ -741,7 +740,6 @@ async function saveWill() {
     if (dbErr) throw new Error(dbErr.message);
 
     allWills.unshift(inserted);
-    document.getElementById('willCount').textContent = allWills.length;
     renderWills();
     closeWillModal();
     switchTab('will');
