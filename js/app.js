@@ -728,6 +728,11 @@ function updateVideoTextCount() {
 function previewVideo(e) {
   const file = e.target.files[0];
   if (!file) return;
+  if (file.size > 100 * 1024 * 1024) {
+    alert('영상 파일은 100MB 이하만 업로드 가능합니다.');
+    e.target.value = '';
+    return;
+  }
   const vid = document.createElement('video');
   vid.preload = 'metadata';
   vid.onloadedmetadata = () => {
