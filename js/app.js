@@ -477,9 +477,16 @@ async function openMyConsultations() {
     <div class="bg-gray-50 rounded-2xl p-4 space-y-2">
       <div class="flex items-center justify-between">
         <span class="text-sm font-bold text-[#1A1A1A]">${esc(c.expert_type)}</span>
-        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${statusClass[c.status] || statusClass.pending}">
-          ${statusLabel[c.status] || '대기'}
-        </span>
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 rounded-full text-xs font-bold ${statusClass[c.status] || statusClass.pending}">
+            ${statusLabel[c.status] || '대기'}
+          </span>
+          ${c.status === 'pending' ? `
+          <button onclick="deleteMyConsult('${c.id}')"
+            class="w-6 h-6 bg-red-50 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors">
+            <iconify-icon icon="solar:trash-bin-trash-linear" width="12" class="text-red-400"></iconify-icon>
+          </button>` : ''}
+        </div>
       </div>
       <p class="text-xs text-gray-500 leading-relaxed whitespace-pre-wrap">${esc(c.content)}</p>
       <p class="text-xs text-gray-300">${formatDate(c.created_at)}</p>
@@ -490,6 +497,19 @@ async function openMyConsultations() {
 function closeMyConsultations() {
   document.getElementById('myConsultModal').classList.add('hidden');
   document.body.style.overflow = '';
+}
+
+async function deleteMyConsult(id) {
+  if (!confirm('상담 신청을 취소하시겠습니까?')) return;
+  const { error } = await sb
+    .from('consultations')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', currentUser.id)
+    .eq('status', 'pending');
+  if (error) { alert('삭제에 실패했습니다: ' + error.message); return; }
+  await checkFreeConsult();
+  await openMyConsultations();
 }
 
 function openRandomModal() {
