@@ -776,10 +776,12 @@ async function saveWill() {
 
     } else if (currentWillType === 'image') {
       const urls = [];
-      for (const file of willImageFiles) {
-        const path = `${currentUser.id}/${Date.now()}_${file.name}`;
+      for (let i = 0; i < willImageFiles.length; i++) {
+        const file = willImageFiles[i];
+        const ext  = file.name.split('.').pop().toLowerCase();
+        const path = `${currentUser.id}/${Date.now()}_${i}.${ext}`;
         const { error: upErr } = await sb.storage.from('wills').upload(path, file, { upsert: true });
-        if (upErr) throw new Error('사진 업로드에 실패했습니다.');
+        if (upErr) throw new Error(`사진 업로드에 실패했습니다: ${upErr.message}`);
         const { data: { publicUrl } } = sb.storage.from('wills').getPublicUrl(path);
         urls.push(publicUrl);
       }
@@ -787,9 +789,10 @@ async function saveWill() {
       content  = imageText || null;
 
     } else if (currentWillType === 'video') {
-      const path = `${currentUser.id}/${Date.now()}_${vidFile.name}`;
+      const ext  = vidFile.name.split('.').pop().toLowerCase();
+      const path = `${currentUser.id}/${Date.now()}.${ext}`;
       const { error: upErr } = await sb.storage.from('wills').upload(path, vidFile, { upsert: true });
-      if (upErr) throw new Error('영상 업로드에 실패했습니다.');
+      if (upErr) throw new Error(`영상 업로드에 실패했습니다: ${upErr.message}`);
       const { data: { publicUrl } } = sb.storage.from('wills').getPublicUrl(path);
       fileUrl = publicUrl;
       content = videoText || null;
