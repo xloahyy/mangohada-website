@@ -605,10 +605,13 @@ function openWillDetail(id) {
   if (will.type === 'text') {
     body = `<p class="whitespace-pre-wrap">${esc(will.content || '')}</p>`;
   } else if (will.type === 'image' && will.file_url) {
-    body = `<img src="${will.file_url}" alt="사진 유언" class="w-full rounded-2xl mb-3">`;
-    if (will.content) body += `<p class="whitespace-pre-wrap">${esc(will.content)}</p>`;
+    let urls = [];
+    try { urls = JSON.parse(will.file_url); } catch { urls = [will.file_url]; }
+    body = urls.map(url => `<img src="${url}" class="w-full rounded-2xl mb-3 object-cover">`).join('');
+    if (will.content) body += `<p class="whitespace-pre-wrap mt-2">${esc(will.content)}</p>`;
   } else if (will.type === 'video' && will.file_url) {
-    body = `<video controls class="w-full rounded-2xl"><source src="${will.file_url}"></video>`;
+    body = `<video controls class="w-full rounded-2xl mb-3"><source src="${will.file_url}"></video>`;
+    if (will.content) body += `<p class="whitespace-pre-wrap">${esc(will.content)}</p>`;
   } else {
     body = `<p class="text-gray-400 text-sm">첨부 파일이 없습니다.</p>`;
   }
@@ -638,15 +641,19 @@ async function deleteWillConfirm() {
 /* ========================
    유언 작성 모달
 ======================== */
+let willImageFiles = [];
+
 function openWillModal() {
-  // 폼 초기화
   setWillType('text');
-  ['willTitle', 'willRecipient', 'willContent'].forEach(id => {
+  ['willTitle', 'willRecipient', 'willContent', 'willImageText', 'willVideoText'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  resetUploadZone('imagePreview', 'solar:gallery-add-linear', '사진을 클릭하여 첨부하세요', 'JPG, PNG (최대 10MB)');
-  resetUploadZone('videoPreview', 'solar:video-frame-play-vertical-linear', '영상을 클릭하여 첨부하세요', 'MP4, MOV (최대 100MB)');
-  document.getElementById('willImageInput').value = '';
+  ['imageTextCount', 'videoTextCount'].forEach(id => {
+    document.getElementById(id).textContent = '0';
+  });
+  willImageFiles = [];
+  renderImagePreviewGrid();
+  resetUploadZone('videoPreview', 'solar:video-frame-play-vertical-linear', '영상을 클릭하여 첨부하세요', 'MP4, MOV · 1분 이내');
   document.getElementById('willVideoInput').value = '';
   document.getElementById('willError').classList.add('hidden');
 
@@ -672,68 +679,125 @@ function setWillType(type) {
   document.getElementById('willVideoArea').classList.toggle('hidden', type !== 'video');
 }
 
-function previewImage(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('imagePreview').innerHTML =
-      `<img src="${ev.target.result}" alt="미리보기" class="w-full h-full object-cover">`;
-  };
-  reader.readAsDataURL(file);
+function addImageFiles(e) {
+  const newFiles = Array.from(e.target.files);
+  const remaining = 5 - willImageFiles.length;
+  willImageFiles.push(...newFiles.slice(0, remaining));
+  e.target.value = '';
+  renderImagePreviewGrid();
+}
+
+function removeImageFile(index) {
+  willImageFiles.splice(index, 1);
+  renderImagePreviewGrid();
+}
+
+function renderImagePreviewGrid() {
+  const grid = document.getElementById('imagePreviewGrid');
+  document.getElementById('imageCount').textContent = willImageFiles.length;
+  let html = willImageFiles.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    return `
+      <div class="relative" style="aspect-ratio:1">
+        <img src="${url}" class="w-full h-full object-cover rounded-xl">
+        <button type="button" onclick="removeImageFile(${i})"
+          class="absolute top-1 right-1 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center shadow">
+          ×
+        </button>
+      </div>`;
+  }).join('');
+  if (willImageFiles.length < 5) {
+    html += `
+      <label class="flex flex-col items-center justify-center bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 cursor-pointer hover:bg-gray-100 transition-all" style="aspect-ratio:1">
+        <iconify-icon icon="solar:gallery-add-linear" width="24" class="text-gray-300 mb-1"></iconify-icon>
+        <span class="text-xs text-gray-400">추가</span>
+        <input type="file" accept="image/*" multiple class="hidden" onchange="addImageFiles(event)">
+      </label>`;
+  }
+  grid.innerHTML = html;
+}
+
+function updateImageTextCount() {
+  document.getElementById('imageTextCount').textContent = document.getElementById('willImageText').value.length;
+}
+
+function updateVideoTextCount() {
+  document.getElementById('videoTextCount').textContent = document.getElementById('willVideoText').value.length;
 }
 
 function previewVideo(e) {
   const file = e.target.files[0];
   if (!file) return;
-  document.getElementById('videoPreview').innerHTML = `
-    <iconify-icon icon="solar:video-frame-play-vertical-bold" width="36" class="text-[#F5A623] mb-2"></iconify-icon>
-    <p class="text-sm font-bold text-[#1A1A1A] px-4 text-center truncate">${esc(file.name)}</p>
-    <p class="text-xs text-gray-400 mt-1">${(file.size / 1024 / 1024).toFixed(1)}MB</p>
-  `;
+  const vid = document.createElement('video');
+  vid.preload = 'metadata';
+  vid.onloadedmetadata = () => {
+    URL.revokeObjectURL(vid.src);
+    if (vid.duration > 60) {
+      alert('영상은 1분(60초) 이내만 업로드 가능합니다.');
+      e.target.value = '';
+      resetUploadZone('videoPreview', 'solar:video-frame-play-vertical-linear', '영상을 클릭하여 첨부하세요', 'MP4, MOV · 1분 이내');
+      return;
+    }
+    document.getElementById('videoPreview').innerHTML = `
+      <iconify-icon icon="solar:video-frame-play-vertical-bold" width="36" class="text-[#F5A623] mb-2"></iconify-icon>
+      <p class="text-sm font-bold text-[#1A1A1A] px-4 text-center truncate">${esc(file.name)}</p>
+      <p class="text-xs text-gray-400 mt-1">${(file.size / 1024 / 1024).toFixed(1)}MB · ${Math.round(vid.duration)}초</p>
+    `;
+  };
+  vid.src = URL.createObjectURL(file);
 }
 
 async function saveWill() {
   const title     = document.getElementById('willTitle').value.trim();
   const recipient = document.getElementById('willRecipient').value.trim();
-  const content   = document.getElementById('willContent').value.trim();
   const errEl     = document.getElementById('willError');
   const btn       = document.getElementById('saveWillBtn');
 
   if (!title) { showMsg(errEl, '제목을 입력해주세요'); return; }
-  if (currentWillType === 'text' && !content) { showMsg(errEl, '내용을 입력해주세요'); return; }
 
-  const imgFile = document.getElementById('willImageInput').files[0];
-  const vidFile = document.getElementById('willVideoInput').files[0];
+  const textContent  = document.getElementById('willContent').value.trim();
+  const imageText    = document.getElementById('willImageText').value.trim();
+  const videoText    = document.getElementById('willVideoText').value.trim();
+  const vidFile      = document.getElementById('willVideoInput').files[0];
 
-  if (currentWillType === 'image' && !imgFile) { showMsg(errEl, '사진을 첨부해주세요'); return; }
-  if (currentWillType === 'video' && !vidFile) { showMsg(errEl, '영상을 첨부해주세요'); return; }
+  if (currentWillType === 'text'  && !textContent)          { showMsg(errEl, '내용을 입력해주세요'); return; }
+  if (currentWillType === 'image' && !willImageFiles.length) { showMsg(errEl, '사진을 최소 1장 첨부해주세요'); return; }
+  if (currentWillType === 'video' && !vidFile)               { showMsg(errEl, '영상을 첨부해주세요'); return; }
 
   setLoading(btn, true, '저장 중...');
   errEl.classList.add('hidden');
 
   try {
     let fileUrl = null;
-    const uploadFile = currentWillType === 'image' ? imgFile : currentWillType === 'video' ? vidFile : null;
+    let content = null;
 
-    if (uploadFile) {
-      const path = `${currentUser.id}/${Date.now()}_${uploadFile.name}`;
-      const { error: upErr } = await sb.storage.from('wills').upload(path, uploadFile, { upsert: true });
-      if (upErr) throw new Error('파일 업로드에 실패했습니다. Storage 버킷(wills)을 확인해주세요.');
+    if (currentWillType === 'text') {
+      content = textContent;
+
+    } else if (currentWillType === 'image') {
+      const urls = [];
+      for (const file of willImageFiles) {
+        const path = `${currentUser.id}/${Date.now()}_${file.name}`;
+        const { error: upErr } = await sb.storage.from('wills').upload(path, file, { upsert: true });
+        if (upErr) throw new Error('사진 업로드에 실패했습니다.');
+        const { data: { publicUrl } } = sb.storage.from('wills').getPublicUrl(path);
+        urls.push(publicUrl);
+      }
+      fileUrl  = JSON.stringify(urls);
+      content  = imageText || null;
+
+    } else if (currentWillType === 'video') {
+      const path = `${currentUser.id}/${Date.now()}_${vidFile.name}`;
+      const { error: upErr } = await sb.storage.from('wills').upload(path, vidFile, { upsert: true });
+      if (upErr) throw new Error('영상 업로드에 실패했습니다.');
       const { data: { publicUrl } } = sb.storage.from('wills').getPublicUrl(path);
       fileUrl = publicUrl;
+      content = videoText || null;
     }
 
     const { data: inserted, error: dbErr } = await sb
       .from('wills')
-      .insert([{
-        user_id:   currentUser.id,
-        title,
-        content:   content || null,
-        type:      currentWillType,
-        recipient: recipient || null,
-        file_url:  fileUrl,
-      }])
+      .insert([{ user_id: currentUser.id, title, content, type: currentWillType, recipient: recipient || null, file_url: fileUrl }])
       .select()
       .single();
 

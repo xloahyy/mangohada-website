@@ -612,29 +612,41 @@
       </div>
 
       <!-- 사진 -->
-      <div id="willImageArea" class="hidden">
-        <label class="form-label">사진 첨부 <span class="text-[#F5A623]">*</span></label>
-        <label for="willImageInput" class="block cursor-pointer">
-          <div id="imagePreview" class="upload-zone">
-            <iconify-icon icon="solar:gallery-add-linear" width="36" class="text-gray-300 mb-2"></iconify-icon>
-            <p class="text-sm text-gray-400 font-medium">사진을 클릭하여 첨부하세요</p>
-            <p class="text-xs text-gray-300 mt-1">JPG, PNG (최대 10MB)</p>
+      <div id="willImageArea" class="hidden space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label class="form-label mb-0">사진 첨부 <span class="text-[#F5A623]">*</span></label>
+            <span class="text-xs text-gray-400 font-medium"><span id="imageCount">0</span>/5장</span>
           </div>
-        </label>
-        <input id="willImageInput" type="file" accept="image/*" class="hidden" onchange="previewImage(event)">
+          <div id="imagePreviewGrid" class="grid grid-cols-3 gap-2"></div>
+        </div>
+        <div>
+          <label class="form-label">내용 <span class="text-gray-300 font-normal">(선택)</span></label>
+          <textarea id="willImageText" rows="3" placeholder="사진과 함께 남길 글을 써주세요..." maxlength="500"
+            class="form-input resize-none" oninput="updateImageTextCount()"></textarea>
+          <p class="text-right text-xs text-gray-300 mt-1"><span id="imageTextCount">0</span> / 500</p>
+        </div>
       </div>
 
       <!-- 영상 -->
-      <div id="willVideoArea" class="hidden">
-        <label class="form-label">영상 첨부 <span class="text-[#F5A623]">*</span></label>
-        <label for="willVideoInput" class="block cursor-pointer">
-          <div id="videoPreview" class="upload-zone">
-            <iconify-icon icon="solar:video-frame-play-vertical-linear" width="36" class="text-gray-300 mb-2"></iconify-icon>
-            <p class="text-sm text-gray-400 font-medium">영상을 클릭하여 첨부하세요</p>
-            <p class="text-xs text-gray-300 mt-1">MP4, MOV (최대 100MB)</p>
-          </div>
-        </label>
-        <input id="willVideoInput" type="file" accept="video/*" class="hidden" onchange="previewVideo(event)">
+      <div id="willVideoArea" class="hidden space-y-4">
+        <div>
+          <label class="form-label">영상 첨부 <span class="text-[#F5A623]">*</span> <span class="text-gray-300 font-normal">(1분 이내)</span></label>
+          <label for="willVideoInput" class="block cursor-pointer">
+            <div id="videoPreview" class="upload-zone">
+              <iconify-icon icon="solar:video-frame-play-vertical-linear" width="36" class="text-gray-300 mb-2"></iconify-icon>
+              <p class="text-sm text-gray-400 font-medium">영상을 클릭하여 첨부하세요</p>
+              <p class="text-xs text-gray-300 mt-1">MP4, MOV · 1분 이내</p>
+            </div>
+          </label>
+          <input id="willVideoInput" type="file" accept="video/*" class="hidden" onchange="previewVideo(event)">
+        </div>
+        <div>
+          <label class="form-label">내용 <span class="text-gray-300 font-normal">(선택)</span></label>
+          <textarea id="willVideoText" rows="3" placeholder="영상과 함께 남길 글을 써주세요..." maxlength="500"
+            class="form-input resize-none" oninput="updateVideoTextCount()"></textarea>
+          <p class="text-right text-xs text-gray-300 mt-1"><span id="videoTextCount">0</span> / 500</p>
+        </div>
       </div>
 
       <p id="willError" class="text-xs text-red-400 hidden"></p>
