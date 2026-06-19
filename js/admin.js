@@ -184,13 +184,16 @@ function statusLabel(s) {
 }
 
 /* ── 유언 작성 ── */
+let allAdminWills = [];
+
 async function loadAdminWills() {
   const { data } = await sb
     .from('wills')
     .select('id, title, content, type, created_at, user_id')
     .order('created_at', { ascending: false });
 
-  const list = data || [];
+  allAdminWills = data || [];
+  const list = allAdminWills;
   const el = document.getElementById('willTable');
 
   if (!list.length) {
@@ -210,7 +213,8 @@ async function loadAdminWills() {
       </thead>
       <tbody>
         ${list.map(w => `
-          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <tr onclick="openWillDetailAdmin('${w.id}')"
+            class="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer">
             <td class="px-6 py-4 font-bold text-[#1A1A1A] max-w-[180px]"><p class="truncate">${esc(w.title || '')}</p></td>
             <td class="px-6 py-4 text-gray-600 max-w-xs"><p class="truncate">${esc(w.content || '')}</p></td>
             <td class="px-6 py-4 text-gray-400">${w.type || 'text'}</td>
@@ -220,6 +224,21 @@ async function loadAdminWills() {
       </tbody>
     </table>
   `;
+}
+
+function openWillDetailAdmin(id) {
+  const w = allAdminWills.find(x => x.id === id);
+  if (!w) return;
+  const typeLabel = { text: '글 유언', image: '사진 유언', video: '영상 유언' };
+  document.getElementById('willDetailType').textContent    = typeLabel[w.type] || '유언';
+  document.getElementById('willDetailTitle').textContent   = w.title || '';
+  document.getElementById('willDetailContent').textContent = w.content || '';
+  document.getElementById('willDetailDate').textContent    = fmtDate(w.created_at) + ' 작성';
+  document.getElementById('willDetailAdminModal').classList.remove('hidden');
+}
+
+function closeWillDetailAdmin() {
+  document.getElementById('willDetailAdminModal').classList.add('hidden');
 }
 
 /* ── 행복저금 ── */
