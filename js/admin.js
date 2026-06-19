@@ -236,7 +236,9 @@ function openWillDetailAdmin(id) {
 
   let body = '';
   if (w.type === 'image' && w.file_url) {
-    body += `<img src="${w.file_url}" class="w-full rounded-2xl mb-4 object-cover">`;
+    let urls = [];
+    try { urls = JSON.parse(w.file_url); } catch { urls = [w.file_url]; }
+    body += urls.map(url => `<img src="${url}" class="w-full rounded-2xl mb-4 object-cover">`).join('');
   } else if (w.type === 'video' && w.file_url) {
     body += `<video controls class="w-full rounded-2xl mb-4"><source src="${w.file_url}"></video>`;
   }
