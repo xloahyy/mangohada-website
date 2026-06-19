@@ -452,6 +452,46 @@ async function submitConsult() {
   setTimeout(() => closeConsultModal(), 2000);
 }
 
+async function openMyConsultations() {
+  document.getElementById('myConsultModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  const listEl = document.getElementById('myConsultList');
+  listEl.innerHTML = '<p class="text-sm text-gray-300 text-center py-6">불러오는 중...</p>';
+
+  const { data } = await sb
+    .from('consultations')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (!data || !data.length) {
+    listEl.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">신청 내역이 없습니다</p>';
+    return;
+  }
+
+  const statusLabel = { pending: '대기', confirmed: '확인', done: '완료' };
+  const statusClass = { pending: 'bg-yellow-100 text-yellow-700', confirmed: 'bg-green-100 text-green-700', done: 'bg-blue-100 text-blue-700' };
+
+  listEl.innerHTML = data.map(c => `
+    <div class="bg-gray-50 rounded-2xl p-4 space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-bold text-[#1A1A1A]">${esc(c.expert_type)}</span>
+        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${statusClass[c.status] || statusClass.pending}">
+          ${statusLabel[c.status] || '대기'}
+        </span>
+      </div>
+      <p class="text-xs text-gray-500 leading-relaxed whitespace-pre-wrap">${esc(c.content)}</p>
+      <p class="text-xs text-gray-300">${formatDate(c.created_at)}</p>
+    </div>
+  `).join('');
+}
+
+function closeMyConsultations() {
+  document.getElementById('myConsultModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
 function openRandomModal() {
   document.getElementById('randomResult').innerHTML = '<p class="text-gray-300 text-sm">버튼을 눌러 다른 유저의 행복을 확인해보세요</p>';
   document.getElementById('randomModal').classList.remove('hidden');

@@ -427,7 +427,7 @@
       <div id="expertGrid" class="grid grid-cols-2 gap-4 mb-6"></div>
 
       <!-- 나의 상담 내역 -->
-      <button class="w-full card flex items-center justify-between hover:border-[#F5A623]/40 hover:shadow-md transition-all">
+      <button onclick="openMyConsultations()" class="w-full card flex items-center justify-between hover:border-[#F5A623]/40 hover:shadow-md transition-all">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center">
             <iconify-icon icon="solar:chat-round-line-linear" width="20" class="text-gray-400"></iconify-icon>
@@ -516,6 +516,25 @@
         1회 무료 상담 신청하기
       </button>
     </div>
+  </div>
+</div>
+
+<!-- ======================================================
+     나의 상담 내역 모달
+====================================================== -->
+<div id="myConsultModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeMyConsultations()"></div>
+  <div class="modal-dialog modal-pop" style="max-width:520px;">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-bold text-[#F5A623] uppercase tracking-widest mb-1">나의 기록</p>
+        <h3 class="text-xl font-black text-[#1A1A1A]">상담 신청 내역</h3>
+      </div>
+      <button onclick="closeMyConsultations()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+        <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
+      </button>
+    </div>
+    <div id="myConsultList" class="space-y-3 overflow-y-auto" style="max-height:60vh;"></div>
   </div>
 </div>
 
