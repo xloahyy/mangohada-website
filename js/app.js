@@ -738,7 +738,7 @@ async function saveWill() {
       .select()
       .single();
 
-    if (dbErr) throw new Error('저장에 실패했습니다. wills 테이블을 확인해주세요.');
+    if (dbErr) throw new Error(dbErr.message);
 
     allWills.unshift(inserted);
     document.getElementById('willCount').textContent = allWills.length;
