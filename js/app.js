@@ -48,6 +48,7 @@ let currentWillFilter = 'all';
 let currentWillId = null;
 let currentWillType = 'text';
 let currentArticleTag = '';
+let freeConsultUsed = false;
 
 /* ========================
    정적 데이터
@@ -152,9 +153,7 @@ async function enterApp(user) {
   document.getElementById('appScreen').classList.remove('hidden');
 
   // 데이터 로드 및 렌더
-  await loadWills();
-  await loadHappiness();
-  await loadArticles();
+  await Promise.all([loadWills(), loadHappiness(), loadArticles(), checkFreeConsult()]);
   renderExperts();
   switchTab('home');
 }
@@ -381,6 +380,15 @@ async function deleteHappiness(id) {
 ======================== */
 let currentExpertType = '';
 
+async function checkFreeConsult() {
+  if (!currentUser) return;
+  const { count } = await sb
+    .from('consultations')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', currentUser.id);
+  freeConsultUsed = (count || 0) > 0;
+}
+
 function openConsultModal(expertTitle) {
   currentExpertType = expertTitle;
   document.getElementById('consultExpertTitle').textContent = expertTitle;
@@ -388,6 +396,12 @@ function openConsultModal(expertTitle) {
   document.getElementById('consultCharCount').textContent = '0';
   document.getElementById('consultError').classList.add('hidden');
   document.getElementById('consultSuccess').classList.add('hidden');
+
+  const isFree = !freeConsultUsed;
+  document.getElementById('consultFreeNotice').classList.toggle('hidden', !isFree);
+  document.getElementById('consultPaidNotice').classList.toggle('hidden', isFree);
+  document.getElementById('submitConsultBtn').textContent = isFree ? '1회 무료 상담 신청하기' : '신청하기';
+
   document.getElementById('consultModal').classList.remove('hidden');
 }
 
@@ -432,6 +446,7 @@ async function submitConsult() {
     return;
   }
 
+  freeConsultUsed = true;
   errEl.classList.add('hidden');
   successEl.classList.remove('hidden');
   setTimeout(() => closeConsultModal(), 2000);
