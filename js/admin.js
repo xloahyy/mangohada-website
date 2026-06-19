@@ -189,7 +189,7 @@ let allAdminWills = [];
 async function loadAdminWills() {
   const { data } = await sb
     .from('wills')
-    .select('id, title, content, type, created_at, user_id')
+    .select('id, title, content, type, file_url, created_at, user_id')
     .order('created_at', { ascending: false });
 
   allAdminWills = data || [];
@@ -230,10 +230,24 @@ function openWillDetailAdmin(id) {
   const w = allAdminWills.find(x => x.id === id);
   if (!w) return;
   const typeLabel = { text: '글 유언', image: '사진 유언', video: '영상 유언' };
-  document.getElementById('willDetailType').textContent    = typeLabel[w.type] || '유언';
-  document.getElementById('willDetailTitle').textContent   = w.title || '';
-  document.getElementById('willDetailContent').textContent = w.content || '';
-  document.getElementById('willDetailDate').textContent    = fmtDate(w.created_at) + ' 작성';
+  document.getElementById('willDetailType').textContent  = typeLabel[w.type] || '유언';
+  document.getElementById('willDetailTitle').textContent = w.title || '';
+  document.getElementById('willDetailDate').textContent  = fmtDate(w.created_at) + ' 작성';
+
+  let body = '';
+  if (w.type === 'image' && w.file_url) {
+    body += `<img src="${w.file_url}" class="w-full rounded-2xl mb-4 object-cover">`;
+  } else if (w.type === 'video' && w.file_url) {
+    body += `<video controls class="w-full rounded-2xl mb-4"><source src="${w.file_url}"></video>`;
+  }
+  if (w.content) {
+    body += `<p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${esc(w.content)}</p>`;
+  }
+  if (!body) {
+    body = '<p class="text-sm text-gray-300">내용이 없습니다</p>';
+  }
+  document.getElementById('willDetailContent').innerHTML = body;
+
   document.getElementById('willDetailAdminModal').classList.remove('hidden');
 }
 
