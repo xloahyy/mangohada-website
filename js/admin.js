@@ -140,7 +140,8 @@ function renderConsultations(list, targetId, compact) {
       </thead>
       <tbody>
         ${list.map(c => `
-          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+          <tr onclick="openConsultDetail('${c.id}')"
+            class="border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer">
             <td class="px-6 py-4 font-medium text-[#1A1A1A]">${esc(c.user_name || '-')}</td>
             <td class="px-6 py-4 text-gray-600">${esc(c.expert_type)}</td>
             ${compact ? '' : `<td class="px-6 py-4 text-gray-500 max-w-xs"><p class="truncate">${esc(c.content)}</p></td>`}
@@ -150,15 +151,7 @@ function renderConsultations(list, targetId, compact) {
                 ${statusLabel(c.status)}
               </span>
             </td>
-            ${compact ? '' : `
-            <td class="px-6 py-4">
-              <select onchange="updateStatus('${c.id}', this.value)"
-                class="text-xs font-bold bg-gray-100 rounded-lg px-2 py-1.5 outline-none cursor-pointer">
-                <option value="pending"   ${c.status==='pending'   ? 'selected':''}>대기</option>
-                <option value="confirmed" ${c.status==='confirmed' ? 'selected':''}>확인</option>
-                <option value="done"      ${c.status==='done'      ? 'selected':''}>완료</option>
-              </select>
-            </td>`}
+            ${compact ? '' : `<td class="px-6 py-4 text-xs text-gray-300">클릭하여 상세보기</td>`}
           </tr>
         `).join('')}
       </tbody>
@@ -168,6 +161,34 @@ function renderConsultations(list, targetId, compact) {
 
 async function updateStatus(id, status) {
   await sb.from('consultations').update({ status }).eq('id', id);
+  await loadConsultations();
+  filterConsult(currentFilter);
+}
+
+let currentConsultId = null;
+
+function openConsultDetail(id) {
+  const c = allConsultations.find(x => x.id === id);
+  if (!c) return;
+  currentConsultId = id;
+  document.getElementById('cdUserName').textContent   = c.user_name || '-';
+  document.getElementById('cdExpertType').textContent = c.expert_type || '-';
+  document.getElementById('cdDate').textContent       = fmtDate(c.created_at);
+  document.getElementById('cdContent').textContent    = c.content || '';
+  document.getElementById('cdStatusSelect').value     = c.status || 'pending';
+  document.getElementById('consultDetailModal').classList.remove('hidden');
+}
+
+function closeConsultDetail() {
+  document.getElementById('consultDetailModal').classList.add('hidden');
+  currentConsultId = null;
+}
+
+async function updateConsultStatus(status) {
+  if (!currentConsultId) return;
+  await sb.from('consultations').update({ status }).eq('id', currentConsultId);
+  const c = allConsultations.find(x => x.id === currentConsultId);
+  if (c) c.status = status;
   await loadConsultations();
   filterConsult(currentFilter);
 }
