@@ -387,9 +387,14 @@ async function saveHappiness() {
 }
 
 async function deleteHappiness(id) {
-  if (!confirm('삭제하시겠어요?')) return;
-  await sb.from('happiness').delete().eq('id', id).eq('user_id', currentUser.id);
-  await loadHappiness();
+  openDeleteConfirm(
+    '적립된 1망고는 소멸됩니다.\n삭제하시겠습니까?',
+    async () => {
+      await sb.from('happiness').delete().eq('id', id).eq('user_id', currentUser.id);
+      await loadHappiness();
+      await addMango(-1, 'deduct', '행복저금 삭제 망고 소멸');
+    }
+  );
 }
 
 /* ========================
@@ -514,6 +519,23 @@ async function openMyConsultations() {
 function closeMyConsultations() {
   document.getElementById('myConsultModal').classList.add('hidden');
   document.body.style.overflow = '';
+}
+
+let _deleteConfirmCallback = null;
+
+function openDeleteConfirm(message, onConfirm) {
+  _deleteConfirmCallback = onConfirm;
+  document.getElementById('deleteConfirmMsg').textContent = message;
+  document.getElementById('deleteConfirmYesBtn').onclick = async () => {
+    closeDeleteConfirm();
+    await onConfirm();
+  };
+  document.getElementById('deleteConfirmModal').classList.remove('hidden');
+}
+
+function closeDeleteConfirm() {
+  document.getElementById('deleteConfirmModal').classList.add('hidden');
+  _deleteConfirmCallback = null;
 }
 
 async function deleteMyConsult(id) {
@@ -720,14 +742,19 @@ function closeWillDetail() {
 }
 
 async function deleteWillConfirm() {
-  if (!currentWillId || !confirm('이 유언을 영구 삭제하시겠습니까?')) return;
-
-  const { error } = await sb.from('wills').delete().eq('id', currentWillId);
-  if (!error) {
-    allWills = allWills.filter(w => w.id !== currentWillId);
-    renderWills();
-    closeWillDetail();
-  }
+  if (!currentWillId) return;
+  openDeleteConfirm(
+    '적립된 2망고는 소멸됩니다.\n삭제하시겠습니까?',
+    async () => {
+      const { error } = await sb.from('wills').delete().eq('id', currentWillId);
+      if (!error) {
+        allWills = allWills.filter(w => w.id !== currentWillId);
+        renderWills();
+        closeWillDetail();
+        await addMango(-2, 'deduct', '유언 삭제 망고 소멸');
+      }
+    }
+  );
 }
 
 /* ========================

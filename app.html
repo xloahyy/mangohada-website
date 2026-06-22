@@ -741,6 +741,31 @@
 </div>
 
 <!-- ======================================================
+     삭제 확인 모달
+====================================================== -->
+<div id="deleteConfirmModal" class="modal-overlay hidden" style="z-index:200;">
+  <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-3xl w-full max-w-sm shadow-2xl p-8 mx-4">
+    <div class="text-center mb-6">
+      <div class="w-14 h-14 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <iconify-icon icon="solar:trash-bin-trash-bold" width="26" class="text-red-400"></iconify-icon>
+      </div>
+      <p id="deleteConfirmMsg" class="text-sm text-gray-600 leading-relaxed"></p>
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="closeDeleteConfirm()"
+        class="py-3 rounded-2xl border-2 border-gray-100 text-sm font-bold text-gray-500 hover:bg-gray-50 transition-all">
+        아니요
+      </button>
+      <button id="deleteConfirmYesBtn"
+        class="py-3 rounded-2xl bg-red-400 text-sm font-bold text-white hover:bg-red-500 transition-all">
+        예, 삭제합니다
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================
      행복저금 작성 모달
 ====================================================== -->
 <div id="happinessModal" class="modal-overlay hidden">
