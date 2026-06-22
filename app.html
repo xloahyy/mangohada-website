@@ -498,13 +498,13 @@
               <div class="flex items-center justify-between mb-4">
                 <p class="text-base font-black text-[#1A1A1A]">보유 망고</p>
                 <div class="flex items-center gap-1">
-                  <span class="text-2xl font-black text-[#F5A623]">0</span>
+                  <span id="myinfoMango" class="text-2xl font-black text-[#F5A623]">0</span>
                   <span class="text-2xl">🥭</span>
                 </div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <button class="py-2.5 rounded-xl bg-gray-100 text-sm font-bold text-gray-600 hover:bg-gray-200 transition-all">결제내역</button>
-                <button class="py-2.5 rounded-xl bg-[#F5A623] text-sm font-bold text-white hover:bg-[#E09318] transition-all">충전하기</button>
+                <button onclick="openPaymentHistoryModal()" class="py-2.5 rounded-xl bg-gray-100 text-sm font-bold text-gray-600 hover:bg-gray-200 transition-all">결제내역</button>
+                <button onclick="openPurchaseModal()" class="py-2.5 rounded-xl bg-[#F5A623] text-sm font-bold text-white hover:bg-[#E09318] transition-all">충전하기</button>
               </div>
             </div>
 
@@ -625,6 +625,46 @@
   </div>
 </div>
 
+
+<!-- ======================================================
+     망고 충전 모달
+====================================================== -->
+<div id="purchaseModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePurchaseModal()"></div>
+  <div class="modal-dialog modal-pop" style="max-width:600px;">
+    <div class="flex items-center justify-between mb-2">
+      <div>
+        <p class="text-xs font-bold text-[#F5A623] uppercase tracking-widest mb-1">망고 충전</p>
+        <h3 class="text-xl font-black text-[#1A1A1A]">원하는 망고를 선택하세요</h3>
+      </div>
+      <button onclick="closePurchaseModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+        <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
+      </button>
+    </div>
+    <p class="text-xs text-gray-400 mb-5">현재 보유: <span id="purchaseCurrentMango" class="font-bold text-[#F5A623]">0</span> 🥭</p>
+    <div class="grid grid-cols-3 gap-3" id="purchasePackageGrid"></div>
+    <p class="text-xs text-gray-300 mt-4 text-center">1,000 망고 이상 구매 시 50% 할인 적용 · 1망고 = 220원</p>
+  </div>
+</div>
+
+<!-- ======================================================
+     결제 내역 모달
+====================================================== -->
+<div id="paymentHistoryModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closePaymentHistoryModal()"></div>
+  <div class="modal-dialog modal-pop" style="max-width:480px;">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-bold text-[#F5A623] uppercase tracking-widest mb-1">망고 내역</p>
+        <h3 class="text-xl font-black text-[#1A1A1A]">적립 · 결제 내역</h3>
+      </div>
+      <button onclick="closePaymentHistoryModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200">
+        <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
+      </button>
+    </div>
+    <div id="paymentHistoryList" class="space-y-2 overflow-y-auto" style="max-height:60vh;"></div>
+  </div>
+</div>
 
 <!-- ======================================================
      나의 마지막 초대장 모달

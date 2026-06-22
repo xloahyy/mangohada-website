@@ -49,6 +49,16 @@ let currentWillId = null;
 let currentWillType = 'text';
 let currentArticleTag = '';
 let freeConsultUsed = false;
+let currentMango = 0;
+
+const MANGO_PACKAGES = [
+  { amount: 100,  price: 22000,  discount: false },
+  { amount: 200,  price: 44000,  discount: false },
+  { amount: 500,  price: 110000, discount: false },
+  { amount: 1000, price: 110000, discount: true  },
+  { amount: 3000, price: 330000, discount: true  },
+  { amount: 5000, price: 550000, discount: true  },
+];
 
 /* ========================
    정적 데이터
@@ -155,7 +165,7 @@ async function enterApp(user) {
   document.getElementById('appScreen').classList.remove('hidden');
 
   // 데이터 로드 및 렌더
-  await Promise.all([loadWills(), loadHappiness(), loadArticles(), checkFreeConsult(), loadInvitations()]);
+  await Promise.all([loadWills(), loadHappiness(), loadArticles(), checkFreeConsult(), loadInvitations(), loadMango()]);
   renderExperts();
   switchTab('home');
 }
@@ -242,9 +252,12 @@ async function handleSignup() {
     return;
   }
 
-  // 프로필 저장
+  // 프로필 저장 + 가입 축하 20망고
   if (data.user) {
-    await sb.from('profiles').upsert({ id: data.user.id, name });
+    await sb.from('profiles').upsert({ id: data.user.id, name, mango: 20 });
+    await sb.from('mango_transactions').insert([{
+      user_id: data.user.id, amount: 20, type: 'signup', description: '회원가입 축하 망고'
+    }]);
   }
 
   showMsg(errEl, '✅ 가입 완료! 이메일 확인 후 로그인하세요', true);
@@ -370,6 +383,7 @@ async function saveHappiness() {
   }
   closeHappinessModal();
   await loadHappiness();
+  await addMango(1, 'happiness', '행복저금 망고 적립');
 }
 
 async function deleteHappiness(id) {
@@ -893,6 +907,7 @@ async function saveWill() {
     renderWills();
     closeWillModal();
     switchTab('will');
+    await addMango(2, 'will', '유언 작성 망고 적립');
 
   } catch (err) {
     console.error(err);
@@ -921,6 +936,102 @@ function renderExperts() {
       </div>
     </button>
   `).join('');
+}
+
+/* ========================
+   망고
+======================== */
+async function loadMango() {
+  if (!currentUser) return;
+  const { data } = await sb.from('profiles').select('mango').eq('id', currentUser.id).single();
+  currentMango = data?.mango || 0;
+  updateMangoDisplay();
+}
+
+function updateMangoDisplay() {
+  const el = document.getElementById('myinfoMango');
+  if (el) el.textContent = currentMango.toLocaleString();
+  const el2 = document.getElementById('purchaseCurrentMango');
+  if (el2) el2.textContent = currentMango.toLocaleString();
+}
+
+async function addMango(amount, type, description) {
+  currentMango += amount;
+  updateMangoDisplay();
+  await sb.from('profiles').update({ mango: currentMango }).eq('id', currentUser.id);
+  await sb.from('mango_transactions').insert([{ user_id: currentUser.id, amount, type, description }]);
+}
+
+function openPurchaseModal() {
+  updateMangoDisplay();
+  const grid = document.getElementById('purchasePackageGrid');
+  grid.innerHTML = MANGO_PACKAGES.map(pkg => `
+    <button onclick="purchaseMango(${pkg.amount}, ${pkg.price})"
+      class="relative flex flex-col items-center p-4 rounded-2xl border-2 border-gray-100 bg-white hover:border-[#F5A623] hover:shadow-md transition-all group">
+      ${pkg.discount ? '<span class="absolute -top-2 -right-2 bg-red-400 text-white text-[10px] font-black px-2 py-0.5 rounded-full">50% 할인</span>' : ''}
+      <span class="text-3xl mb-1">🥭</span>
+      <span class="text-xl font-black text-[#1A1A1A] group-hover:text-[#F5A623] transition-colors">${pkg.amount.toLocaleString()}</span>
+      <span class="text-xs text-gray-400 mt-0.5">망고</span>
+      <div class="mt-3 w-full pt-3 border-t border-gray-100">
+        ${pkg.discount ? `<p class="text-[10px] text-gray-300 line-through text-center">${(pkg.amount * 220).toLocaleString()}원</p>` : ''}
+        <p class="text-sm font-black text-[#1A1A1A] text-center">${pkg.price.toLocaleString()}원</p>
+      </div>
+    </button>
+  `).join('');
+  document.getElementById('purchaseModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePurchaseModal() {
+  document.getElementById('purchaseModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+async function purchaseMango(amount, price) {
+  if (!confirm(`🥭 ${amount.toLocaleString()} 망고를 ${price.toLocaleString()}원에 구매하시겠습니까?\n\n(현재 데모 버전: 실제 결제 없이 망고가 바로 적립됩니다)`)) return;
+  await addMango(amount, 'purchase', `망고 ${amount.toLocaleString()}개 충전`);
+  closePurchaseModal();
+  alert(`🥭 ${amount.toLocaleString()} 망고가 적립되었습니다!\n현재 보유: ${currentMango.toLocaleString()} 망고`);
+}
+
+async function openPaymentHistoryModal() {
+  document.getElementById('paymentHistoryModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+
+  const listEl = document.getElementById('paymentHistoryList');
+  listEl.innerHTML = '<p class="text-sm text-gray-300 text-center py-6">불러오는 중...</p>';
+
+  const { data } = await sb
+    .from('mango_transactions')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: false });
+
+  if (!data || !data.length) {
+    listEl.innerHTML = '<p class="text-sm text-gray-400 text-center py-8">내역이 없습니다</p>';
+    return;
+  }
+
+  const typeIcon = { signup: '🎁', will: '📝', happiness: '💛', purchase: '💳' };
+  listEl.innerHTML = data.map(t => `
+    <div class="flex items-center justify-between bg-gray-50 rounded-2xl px-4 py-3">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">${typeIcon[t.type] || '🥭'}</span>
+        <div>
+          <p class="text-sm font-bold text-[#1A1A1A]">${esc(t.description || t.type)}</p>
+          <p class="text-xs text-gray-400">${formatDate(t.created_at)}</p>
+        </div>
+      </div>
+      <span class="text-base font-black ${t.amount > 0 ? 'text-[#F5A623]' : 'text-red-400'}">
+        ${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()} 🥭
+      </span>
+    </div>
+  `).join('');
+}
+
+function closePaymentHistoryModal() {
+  document.getElementById('paymentHistoryModal').classList.add('hidden');
+  document.body.style.overflow = '';
 }
 
 /* ========================
