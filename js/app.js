@@ -153,7 +153,7 @@ async function enterApp(user) {
   document.getElementById('appScreen').classList.remove('hidden');
 
   // 데이터 로드 및 렌더
-  await Promise.all([loadWills(), loadHappiness(), loadArticles(), checkFreeConsult()]);
+  await Promise.all([loadWills(), loadHappiness(), loadArticles(), checkFreeConsult(), loadInvitations()]);
   renderExperts();
   switchTab('home');
 }
@@ -918,6 +918,79 @@ function renderExperts() {
       </div>
     </button>
   `).join('');
+}
+
+/* ========================
+   나의 마지막 초대장
+======================== */
+let allInvitations = [];
+
+async function loadInvitations() {
+  if (!currentUser) return;
+  const { data } = await sb
+    .from('invitations')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .order('created_at', { ascending: true });
+  allInvitations = data || [];
+  document.getElementById('inviteCount').textContent = allInvitations.filter(i => i.category !== 'no').length;
+}
+
+async function openInvitationModal() {
+  await loadInvitations();
+  renderInvitationLists();
+  document.getElementById('invitationModal').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeInvitationModal() {
+  document.getElementById('invitationModal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function renderInvitationLists() {
+  ['must', 'maybe', 'no'].forEach(cat => {
+    const list = allInvitations.filter(i => i.category === cat);
+    const el = document.getElementById(`inviteList-${cat}`);
+    if (!list.length) {
+      el.innerHTML = '<p class="text-xs text-gray-400 text-center py-2">아직 없습니다</p>';
+      return;
+    }
+    el.innerHTML = list.map(i => `
+      <div class="flex items-center justify-between bg-white rounded-xl px-3 py-2 shadow-sm">
+        <span class="text-sm font-medium text-[#1A1A1A]">${esc(i.name)}</span>
+        <button onclick="deleteInvitation('${i.id}')"
+          class="w-5 h-5 flex items-center justify-center text-gray-300 hover:text-red-400 transition-colors ml-2 flex-shrink-0">
+          <iconify-icon icon="solar:close-circle-linear" width="14"></iconify-icon>
+        </button>
+      </div>
+    `).join('');
+  });
+}
+
+async function addInvitation(category) {
+  const input = document.getElementById(`inviteInput-${category}`);
+  const name = input.value.trim();
+  if (!name) return;
+
+  const { data, error } = await sb
+    .from('invitations')
+    .insert([{ user_id: currentUser.id, name, category }])
+    .select()
+    .single();
+
+  if (error || !data) return;
+  allInvitations.push(data);
+  input.value = '';
+  renderInvitationLists();
+  document.getElementById('inviteCount').textContent = allInvitations.filter(i => i.category !== 'no').length;
+}
+
+async function deleteInvitation(id) {
+  await sb.from('invitations').delete().eq('id', id).eq('user_id', currentUser.id);
+  allInvitations = allInvitations.filter(i => i.id !== id);
+  renderInvitationLists();
+  document.getElementById('inviteCount').textContent = allInvitations.filter(i => i.category !== 'no').length;
 }
 
 /* ========================

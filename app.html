@@ -237,7 +237,7 @@
                 <p class="text-5xl font-black text-[#1A1A1A]"><span id="inviteCount">0</span></p>
                 <p class="text-sm text-gray-400 mt-1">초대된 사람 (명)</p>
               </div>
-              <button class="px-5 py-2.5 rounded-xl border-2 border-[#1A1A1A] text-sm font-bold hover:bg-[#1A1A1A] hover:text-white transition-all">
+              <button onclick="openInvitationModal()" class="px-5 py-2.5 rounded-xl border-2 border-[#1A1A1A] text-sm font-bold hover:bg-[#1A1A1A] hover:text-white transition-all">
                 관리하기
               </button>
             </div>
@@ -528,6 +528,80 @@
   </div>
 </div>
 
+
+<!-- ======================================================
+     나의 마지막 초대장 모달
+====================================================== -->
+<div id="invitationModal" class="modal-overlay hidden">
+  <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeInvitationModal()"></div>
+  <div class="modal-dialog modal-pop" style="max-width:760px; width:95vw;">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <p class="text-xs font-bold text-[#F5A623] uppercase tracking-widest mb-1">나의 마지막 초대장</p>
+        <h3 class="text-xl font-black text-[#1A1A1A]">초대할 사람 관리</h3>
+      </div>
+      <button onclick="closeInvitationModal()" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors">
+        <iconify-icon icon="solar:close-circle-linear" width="20" class="text-gray-500"></iconify-icon>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-4">
+      <!-- 꼭 초대하고 싶은 사람 -->
+      <div class="bg-blue-50 rounded-2xl p-4 flex flex-col gap-3">
+        <div>
+          <p class="text-xs font-black text-blue-500 uppercase tracking-widest mb-0.5">💙 꼭 초대하고 싶은 사람</p>
+          <p class="text-[11px] text-blue-400">반드시 전하고 싶은 분</p>
+        </div>
+        <div id="inviteList-must" class="space-y-2 min-h-[60px]"></div>
+        <div class="flex gap-2 mt-auto">
+          <input id="inviteInput-must" type="text" placeholder="이름 입력"
+            class="flex-1 px-3 py-2 rounded-xl text-sm border-2 border-blue-100 bg-white outline-none focus:border-blue-300 transition-all"
+            onkeydown="if(event.key==='Enter') addInvitation('must')">
+          <button onclick="addInvitation('must')"
+            class="w-9 h-9 bg-blue-500 text-white rounded-xl flex items-center justify-center hover:bg-blue-600 transition-all flex-shrink-0">
+            <iconify-icon icon="solar:add-circle-linear" width="18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- 초대 고민 중인 사람 -->
+      <div class="bg-yellow-50 rounded-2xl p-4 flex flex-col gap-3">
+        <div>
+          <p class="text-xs font-black text-yellow-600 uppercase tracking-widest mb-0.5">🤔 초대 고민 중인 사람</p>
+          <p class="text-[11px] text-yellow-500">아직 결정하지 못한 분</p>
+        </div>
+        <div id="inviteList-maybe" class="space-y-2 min-h-[60px]"></div>
+        <div class="flex gap-2 mt-auto">
+          <input id="inviteInput-maybe" type="text" placeholder="이름 입력"
+            class="flex-1 px-3 py-2 rounded-xl text-sm border-2 border-yellow-100 bg-white outline-none focus:border-yellow-300 transition-all"
+            onkeydown="if(event.key==='Enter') addInvitation('maybe')">
+          <button onclick="addInvitation('maybe')"
+            class="w-9 h-9 bg-yellow-400 text-white rounded-xl flex items-center justify-center hover:bg-yellow-500 transition-all flex-shrink-0">
+            <iconify-icon icon="solar:add-circle-linear" width="18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- 초대하고 싶지 않은 사람 -->
+      <div class="bg-gray-100 rounded-2xl p-4 flex flex-col gap-3">
+        <div>
+          <p class="text-xs font-black text-gray-500 uppercase tracking-widest mb-0.5">🚫 초대하고 싶지 않은 사람</p>
+          <p class="text-[11px] text-gray-400">유언을 전하지 않을 분</p>
+        </div>
+        <div id="inviteList-no" class="space-y-2 min-h-[60px]"></div>
+        <div class="flex gap-2 mt-auto">
+          <input id="inviteInput-no" type="text" placeholder="이름 입력"
+            class="flex-1 px-3 py-2 rounded-xl text-sm border-2 border-gray-200 bg-white outline-none focus:border-gray-400 transition-all"
+            onkeydown="if(event.key==='Enter') addInvitation('no')">
+          <button onclick="addInvitation('no')"
+            class="w-9 h-9 bg-gray-400 text-white rounded-xl flex items-center justify-center hover:bg-gray-500 transition-all flex-shrink-0">
+            <iconify-icon icon="solar:add-circle-linear" width="18"></iconify-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ======================================================
      행복저금 작성 모달
