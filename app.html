@@ -471,80 +471,89 @@
         <h2 class="text-3xl font-black text-[#1A1A1A]">내정보</h2>
       </div>
 
-      <div class="max-w-xl space-y-4">
+      <div class="flex flex-col" style="height: calc(100vh - 140px);">
+        <!-- 2열 그리드 -->
+        <div class="grid grid-cols-2 gap-5 flex-1 min-h-0">
 
-        <!-- 프로필 카드 -->
-        <div class="card flex items-center gap-4">
-          <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-            <iconify-icon icon="solar:user-bold" width="28" class="text-gray-400"></iconify-icon>
-          </div>
-          <div class="flex-1 min-w-0">
-            <p class="text-lg font-black text-[#1A1A1A]" id="myinfoName">-</p>
-            <p class="text-sm text-gray-400 truncate" id="myinfoEmail">-</p>
-          </div>
-          <button class="flex items-center gap-1 px-4 py-2 rounded-xl bg-gray-100 text-sm font-bold text-gray-600 hover:bg-gray-200 transition-all flex-shrink-0">
-            프로필 수정
-            <iconify-icon icon="solar:arrow-right-linear" width="14"></iconify-icon>
-          </button>
-        </div>
+          <!-- 왼쪽 열 -->
+          <div class="flex flex-col gap-4">
 
-        <!-- 보유 망고 -->
-        <div class="card">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-base font-black text-[#1A1A1A]">보유 망고</p>
-            <div class="flex items-center gap-1">
-              <span class="text-2xl font-black text-[#F5A623]">0</span>
-              <span class="text-2xl">🥭</span>
+            <!-- 프로필 카드 -->
+            <div class="card flex items-center gap-4">
+              <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <iconify-icon icon="solar:user-bold" width="24" class="text-gray-400"></iconify-icon>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-base font-black text-[#1A1A1A]" id="myinfoName">-</p>
+                <p class="text-xs text-gray-400 truncate" id="myinfoEmail">-</p>
+              </div>
+              <button class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gray-100 text-xs font-bold text-gray-600 hover:bg-gray-200 transition-all flex-shrink-0">
+                프로필 수정
+                <iconify-icon icon="solar:arrow-right-linear" width="12"></iconify-icon>
+              </button>
             </div>
+
+            <!-- 보유 망고 -->
+            <div class="card">
+              <div class="flex items-center justify-between mb-4">
+                <p class="text-base font-black text-[#1A1A1A]">보유 망고</p>
+                <div class="flex items-center gap-1">
+                  <span class="text-2xl font-black text-[#F5A623]">0</span>
+                  <span class="text-2xl">🥭</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button class="py-2.5 rounded-xl bg-gray-100 text-sm font-bold text-gray-600 hover:bg-gray-200 transition-all">결제내역</button>
+                <button class="py-2.5 rounded-xl bg-[#F5A623] text-sm font-bold text-white hover:bg-[#E09318] transition-all">충전하기</button>
+              </div>
+            </div>
+
+            <!-- 저장한 콘텐츠 -->
+            <button class="w-full card flex items-center justify-between hover:border-[#F5A623]/40 transition-all">
+              <span class="text-sm font-bold text-[#1A1A1A]">저장한 콘텐츠</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-400"></iconify-icon>
+            </button>
           </div>
-          <div class="grid grid-cols-2 gap-3">
-            <button class="py-3 rounded-xl bg-gray-100 text-sm font-bold text-gray-600 hover:bg-gray-200 transition-all">결제내역</button>
-            <button class="py-3 rounded-xl bg-[#F5A623] text-sm font-bold text-white hover:bg-[#E09318] transition-all">충전하기</button>
+
+          <!-- 오른쪽 열: 설정 메뉴 -->
+          <div class="card p-0 overflow-hidden divide-y divide-gray-50 h-fit">
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">안부인사 받기 설정</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">자주 묻는 질문</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">1:1 문의</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">공지사항</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">앱 잠금 설정</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">앱 정보</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
+            <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
+              <span class="text-sm font-medium text-[#1A1A1A]">이용약관</span>
+              <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+            </button>
           </div>
         </div>
 
-        <!-- 저장한 콘텐츠 -->
-        <button class="w-full card flex items-center justify-between hover:border-[#F5A623]/40 transition-all">
-          <span class="text-sm font-bold text-[#1A1A1A]">저장한 콘텐츠</span>
-          <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-400"></iconify-icon>
-        </button>
-
-        <!-- 설정 메뉴 -->
-        <div class="card p-0 overflow-hidden divide-y divide-gray-50">
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">안부인사 받기 설정</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">자주 묻는 질문</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">1:1 문의</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">공지사항</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">앱 잠금 설정</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">앱 정보</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
-          </button>
-          <button class="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-all">
-            <span class="text-sm font-medium text-[#1A1A1A]">이용약관</span>
-            <iconify-icon icon="solar:arrow-right-linear" width="16" class="text-gray-300"></iconify-icon>
+        <!-- 하단 중앙 로그아웃 -->
+        <div class="flex justify-center pt-5">
+          <button onclick="handleLogout()" class="px-12 py-3 rounded-2xl border-2 border-red-100 text-sm font-bold text-red-400 hover:bg-red-50 transition-all">
+            로그아웃
           </button>
         </div>
-
-        <!-- 로그아웃 -->
-        <button onclick="handleLogout()" class="w-full py-3.5 rounded-2xl border-2 border-red-100 text-sm font-bold text-red-400 hover:bg-red-50 transition-all">
-          로그아웃
-        </button>
 
       </div>
     </div>
