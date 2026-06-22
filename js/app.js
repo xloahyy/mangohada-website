@@ -147,6 +147,8 @@ async function enterApp(user) {
 
   document.getElementById('welcomeName').textContent = name;
   document.getElementById('sidebarUserName').textContent = name;
+  document.getElementById('myinfoName').textContent = name;
+  document.getElementById('myinfoEmail').textContent = user.email;
 
   // 화면 전환
   document.getElementById('authScreen').classList.add('hidden');
@@ -264,16 +266,17 @@ const TAB_ICONS = {
   will:    { active: 'solar:document-text-bold',           inactive: 'solar:document-text-linear' },
   expert:  { active: 'solar:users-group-rounded-bold',     inactive: 'solar:users-group-rounded-linear' },
   article: { active: 'solar:book-2-bold',                  inactive: 'solar:book-2-linear' },
+  myinfo:  { active: 'solar:user-circle-bold',             inactive: 'solar:user-circle-linear' },
 };
 
 function switchTab(tab) {
-  const allTabs = ['home', 'will', 'expert', 'article', 'happiness'];
+  const allTabs = ['home', 'will', 'expert', 'article', 'happiness', 'myinfo'];
   allTabs.forEach(t => {
     const content = document.getElementById(`tab${capitalize(t)}`);
     if (content) content.classList.toggle('hidden', t !== tab);
   });
 
-  ['home', 'will', 'expert', 'article'].forEach(t => {
+  ['home', 'will', 'expert', 'article', 'myinfo'].forEach(t => {
     const nav = document.getElementById(`nav${capitalize(t)}`);
     if (!nav) return;
     const icon = nav.querySelector('iconify-icon');
