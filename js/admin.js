@@ -573,11 +573,19 @@ let allMangoTx = [];
 let currentMangoFilter = 'all';
 
 async function loadMangoTransactions() {
-  const { data } = await sb
-    .from('mango_transactions')
-    .select('*, profiles(name)')
-    .order('created_at', { ascending: false });
-  allMangoTx = data || [];
+  const [txRes, profileRes] = await Promise.all([
+    sb.from('mango_transactions').select('*').order('created_at', { ascending: false }),
+    sb.from('profiles').select('id, name'),
+  ]);
+
+  const profileMap = {};
+  (profileRes.data || []).forEach(p => { profileMap[p.id] = p.name; });
+
+  allMangoTx = (txRes.data || []).map(t => ({
+    ...t,
+    userName: profileMap[t.user_id] || '-',
+  }));
+
   renderMangoTable(allMangoTx);
 }
 
@@ -620,7 +628,7 @@ function renderMangoTable(list) {
       <tbody>
         ${list.map(t => `
           <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 font-medium text-[#1A1A1A]">${esc(t.profiles?.name || '-')}</td>
+            <td class="px-6 py-4 font-medium text-[#1A1A1A]">${esc(t.userName || '-')}</td>
             <td class="px-6 py-4">
               <span class="px-2.5 py-1 rounded-full text-xs font-bold ${typeBadge[t.type] || 'bg-gray-100 text-gray-500'}">
                 ${typeLabel[t.type] || t.type}
