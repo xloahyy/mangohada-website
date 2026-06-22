@@ -52,12 +52,12 @@ let freeConsultUsed = false;
 let currentMango = 0;
 
 const MANGO_PACKAGES = [
-  { amount: 100,  price: 22000,  discount: false },
-  { amount: 200,  price: 44000,  discount: false },
-  { amount: 500,  price: 110000, discount: false },
-  { amount: 1000, price: 110000, discount: true  },
-  { amount: 3000, price: 330000, discount: true  },
-  { amount: 5000, price: 550000, discount: true  },
+  { amount: 100,  price: 2200,  discount: false },
+  { amount: 200,  price: 4400,  discount: false },
+  { amount: 300,  price: 6600,  discount: false },
+  { amount: 1000, price: 11000, discount: true  },
+  { amount: 3000, price: 33000, discount: true  },
+  { amount: 5000, price: 55000, discount: true  },
 ];
 
 /* ========================
@@ -973,7 +973,7 @@ function openPurchaseModal() {
       <span class="text-xl font-black text-[#1A1A1A] group-hover:text-[#F5A623] transition-colors">${pkg.amount.toLocaleString()}</span>
       <span class="text-xs text-gray-400 mt-0.5">망고</span>
       <div class="mt-3 w-full pt-3 border-t border-gray-100">
-        ${pkg.discount ? `<p class="text-[10px] text-gray-300 line-through text-center">${(pkg.amount * 220).toLocaleString()}원</p>` : ''}
+        ${pkg.discount ? `<p class="text-[10px] text-gray-300 line-through text-center">${(pkg.amount * 22).toLocaleString()}원</p>` : ''}
         <p class="text-sm font-black text-[#1A1A1A] text-center">${pkg.price.toLocaleString()}원</p>
       </div>
     </button>
