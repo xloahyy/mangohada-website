@@ -89,6 +89,10 @@
           <iconify-icon icon="solar:users-group-rounded-linear" width="18"></iconify-icon>
           회원 목록
         </button>
+        <button onclick="showSection('mango')" id="nav-mango" class="sidebar-nav">
+          <iconify-icon icon="solar:star-shine-linear" width="18"></iconify-icon>
+          망고 내역
+        </button>
       </nav>
     </div>
     <button onclick="adminLogout()" class="sidebar-nav text-gray-400 hover:text-red-400 hover:bg-red-50">
@@ -206,6 +210,26 @@
       <p class="text-sm text-gray-400 mb-8">전체 가입 회원</p>
       <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <div id="userTable"></div>
+      </div>
+    </div>
+
+    <!-- 망고 내역 -->
+    <div id="sec-mango" class="hidden">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-black text-[#1A1A1A] mb-1">망고 내역</h2>
+          <p class="text-sm text-gray-400">전체 회원 망고 적립 · 충전 내역</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="filterMango('all')"      id="mf-all"      class="px-4 py-2 rounded-xl text-xs font-bold bg-[#1A1A1A] text-white">전체</button>
+          <button onclick="filterMango('signup')"   id="mf-signup"   class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">가입</button>
+          <button onclick="filterMango('will')"     id="mf-will"     class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">유언</button>
+          <button onclick="filterMango('happiness')" id="mf-happiness" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">행복저금</button>
+          <button onclick="filterMango('purchase')" id="mf-purchase" class="px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 text-gray-500">충전</button>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+        <div id="mangoTable"></div>
       </div>
     </div>
 

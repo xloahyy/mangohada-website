@@ -7,7 +7,7 @@ const ADMIN_EMAIL = 'admin@admin.com.com';
 let allConsultations = [];
 let currentFilter = 'all';
 
-const ALL_SECTIONS = ['dashboard', 'wills', 'happiness', 'consultations', 'articles', 'users'];
+const ALL_SECTIONS = ['dashboard', 'wills', 'happiness', 'consultations', 'articles', 'users', 'mango'];
 
 /* ── 초기화 ── */
 (async () => {
@@ -73,6 +73,7 @@ async function loadAll() {
     loadAdminWills(),
     loadAdminHappiness(),
     loadArticles(),
+    loadMangoTransactions(),
   ]);
 }
 
@@ -567,6 +568,76 @@ async function loadUsers() {
   `;
 }
 
+/* ── 망고 내역 ── */
+let allMangoTx = [];
+let currentMangoFilter = 'all';
+
+async function loadMangoTransactions() {
+  const { data } = await sb
+    .from('mango_transactions')
+    .select('*, profiles(name)')
+    .order('created_at', { ascending: false });
+  allMangoTx = data || [];
+  renderMangoTable(allMangoTx);
+}
+
+function filterMango(filter) {
+  currentMangoFilter = filter;
+  ['all', 'signup', 'will', 'happiness', 'purchase'].forEach(f => {
+    document.getElementById(`mf-${f}`).className =
+      `px-4 py-2 rounded-xl text-xs font-bold ${f === filter ? 'bg-[#1A1A1A] text-white' : 'bg-gray-100 text-gray-500'}`;
+  });
+  const list = filter === 'all' ? allMangoTx : allMangoTx.filter(t => t.type === filter);
+  renderMangoTable(list);
+}
+
+function renderMangoTable(list) {
+  const el = document.getElementById('mangoTable');
+  if (!list.length) {
+    el.innerHTML = '<p class="text-center text-sm text-gray-400 py-12">내역이 없습니다</p>';
+    return;
+  }
+
+  const typeLabel = { signup: '가입 적립', will: '유언 작성', happiness: '행복저금', purchase: '망고 충전' };
+  const typeBadge = {
+    signup:    'bg-blue-50 text-blue-500',
+    will:      'bg-purple-50 text-purple-500',
+    happiness: 'bg-yellow-50 text-yellow-600',
+    purchase:  'bg-green-50 text-green-600',
+  };
+
+  el.innerHTML = `
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-gray-100 text-xs font-bold text-gray-400 uppercase tracking-wider">
+          <th class="text-left px-6 py-3">회원</th>
+          <th class="text-left px-6 py-3">유형</th>
+          <th class="text-left px-6 py-3">내용</th>
+          <th class="text-left px-6 py-3">적립량</th>
+          <th class="text-left px-6 py-3">일시</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${list.map(t => `
+          <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 font-medium text-[#1A1A1A]">${esc(t.profiles?.name || '-')}</td>
+            <td class="px-6 py-4">
+              <span class="px-2.5 py-1 rounded-full text-xs font-bold ${typeBadge[t.type] || 'bg-gray-100 text-gray-500'}">
+                ${typeLabel[t.type] || t.type}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-500">${esc(t.description || '-')}</td>
+            <td class="px-6 py-4 font-black ${t.amount > 0 ? 'text-[#F5A623]' : 'text-red-400'}">
+              ${t.amount > 0 ? '+' : ''}${t.amount.toLocaleString()} 🥭
+            </td>
+            <td class="px-6 py-4 text-gray-400 whitespace-nowrap">${fmtDatetime(t.created_at)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
 /* ── 유틸 ── */
 function esc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -574,4 +645,8 @@ function esc(str) {
 function fmtDate(iso) {
   const d = new Date(iso);
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+function fmtDatetime(iso) {
+  const d = new Date(iso);
+  return `${fmtDate(iso)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
 }
